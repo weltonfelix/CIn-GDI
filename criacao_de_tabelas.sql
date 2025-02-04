@@ -15,7 +15,7 @@ CREATE TABLE Conta (
     primeiro_nome VARCHAR2(30) NOT NULL, 
     sobrenome VARCHAR2(30), 
     senha VARCHAR2(40) NOT NULL, 
-    CONSTRAINT pk_conta PRIMARY KEY (email) 
+    CONSTRAINT conta_pkey PRIMARY KEY (email) 
 );
 
 -- Perfil
