@@ -1,6 +1,6 @@
 -- CRIAÇÃO DAS TABELAS --
 -- Plano
-CREATE SEQUENCE plano_id_seq;
+DROP TABLE Plano CASCADE CONSTRAINTS;
 CREATE TABLE Plano(   
     id_plano INT NOT NULL,   
     nome VARCHAR(20) NOT NULL,   
@@ -10,6 +10,7 @@ CREATE TABLE Plano(
 );
 
 -- Conta
+DROP TABLE Conta CASCADE CONSTRAINTS;
 CREATE TABLE Conta ( 
     email VARCHAR2(255) NOT NULL, 
     primeiro_nome VARCHAR2(30) NOT NULL, 
@@ -19,7 +20,7 @@ CREATE TABLE Conta (
 );
 
 -- Perfil
-CREATE SEQUENCE perfil_id_seq;
+DROP TABLE Perfil CASCADE CONSTRAINTS;
 CREATE TABLE Perfil ( 
     id_perfil NUMBER NOT NULL, 
     conta_email VARCHAR2(255) NOT NULL, 
@@ -32,7 +33,7 @@ CREATE TABLE Perfil (
 );
 
 -- Avaliação
-CREATE SEQUENCE id_avaliacao_seq;
+DROP TABLE Avaliacao CASCADE CONSTRAINTS;
 CREATE TABLE Avaliacao ( 
     id_avaliacao NUMBER NOT NULL, 
     qualidade NUMBER NOT NULL, 
@@ -42,7 +43,7 @@ CREATE TABLE Avaliacao (
 );
 
 -- Conteúdo
-CREATE SEQUENCE id_conteudo_seq;
+DROP TABLE Conteudo CASCADE CONSTRAINTS;
 CREATE TABLE Conteudo ( 
     id_conteudo NUMBER NOT NULL, 
     nome VARCHAR2(100) NOT NULL, 
@@ -57,15 +58,16 @@ CREATE TABLE Conteudo (
 );
 
 -- Filme
+DROP TABLE Filme CASCADE CONSTRAINTS;
 CREATE TABLE Filme ( 
     id_conteudo NUMBER NOT NULL, 
-    nome_sequencia VARCHAR2(255) NOT NULL, 
+    nome_sequencia VARCHAR2(255), 
     CONSTRAINT filme_pkey PRIMARY KEY (id_conteudo), 
     CONSTRAINT filme_conteudo_fkey FOREIGN KEY (id_conteudo) REFERENCES Conteudo(id_conteudo) 
 );
 
 -- Série
-CREATE SEQUENCE id_serie_seq;
+DROP TABLE Serie CASCADE CONSTRAINTS;
 CREATE TABLE Serie ( 
     id_serie NUMBER NOT NULL, 
     numero_episodios NUMBER NOT NULL, 
@@ -74,6 +76,7 @@ CREATE TABLE Serie (
 );
 
 -- Episódio
+DROP TABLE Episodio CASCADE CONSTRAINTS;
 CREATE TABLE Episodio ( 
     id_conteudo NUMBER NOT NULL, 
     temporada NUMBER NOT NULL, 
@@ -84,6 +87,7 @@ CREATE TABLE Episodio (
 );
 
 -- Plano Permite Conteúdo (a uma conta)
+DROP TABLE PlanoPermiteConteudo CASCADE CONSTRAINTS;
 CREATE TABLE PlanoPermiteConteudo ( 
     id_conteudo NUMBER NOT NULL, 
     id_plano NUMBER NOT NULL, 
@@ -98,6 +102,7 @@ CREATE TABLE PlanoPermiteConteudo (
 );
 
 -- Perfil Consome Conteúdo
+DROP TABLE PerfilConsomeConteudo CASCADE CONSTRAINTS;
 CREATE TABLE PerfilConsomeConteudo ( 
     id_conteudo NUMBER NOT NULL, 
     perfil NUMBER NOT NULL, 
@@ -113,6 +118,7 @@ CREATE TABLE PerfilConsomeConteudo (
 );
 
 -- Telefone
+DROP TABLE Telefone CASCADE CONSTRAINTS;
 CREATE TABLE Telefone ( 
     email VARCHAR2(255) NOT NULL, 
     telefone VARCHAR2(15) NOT NULL, -- "+xxx81912345678" 
