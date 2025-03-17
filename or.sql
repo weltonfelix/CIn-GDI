@@ -103,7 +103,7 @@ CREATE OR REPLACE TYPE conteudo_t AS OBJECT (
     roteiro         VARCHAR2(255),
     producao        VARCHAR2(255),
     sucessor        REF conteudo_t,
-    FINAL MEMBER FUNCTION descricao RETURN VARCHAR2
+    MEMBER FUNCTION descricao RETURN VARCHAR2
 ) NOT FINAL;
 /
 
@@ -120,12 +120,12 @@ END;
 ---------------------------------------------------------------------
 CREATE OR REPLACE TYPE filme_t UNDER conteudo_t (
     nome_sequencia VARCHAR2(255),
-    MEMBER FUNCTION detalhes RETURN VARCHAR2
+    OVERRIDING MEMBER FUNCTION descricao RETURN VARCHAR2
 ) NOT FINAL;
 /
 
 CREATE OR REPLACE TYPE BODY filme_t AS 
-    MEMBER FUNCTION detalhes RETURN VARCHAR2 IS
+    MEMBER FUNCTION descricao RETURN VARCHAR2 IS
     BEGIN
         IF nome_sequencia IS NOT NULL THEN
             RETURN 'Filme: ' || nome || 
@@ -226,7 +226,7 @@ END;
 /
 
 CREATE TABLE plano_obj_tab OF plano_t (
-    PRIMARY KEY id_plano,
+    PRIMARY KEY (id_plano),
     nome NOT NULL,
     preco NOT NULL,
     tempo_fidelidade_meses NOT NULL
@@ -234,7 +234,7 @@ CREATE TABLE plano_obj_tab OF plano_t (
 
 
 CREATE TABLE conta_obj_tab OF conta_t (
-    PRIMARY KEY email,
+    PRIMARY KEY (email),
     primeiro_nome NOT NULL,
     senha NOT NULL
 );
@@ -292,6 +292,5 @@ CREATE TABLE plano_permite_conteudo_obj_tab OF plano_permite_conteudo_t (
 CREATE TABLE perfil_consome_conteudo_obj_tab OF perfil_consome_conteudo_t (
     PRIMARY KEY (id_conteudo, id_perfil, email, data_hora),
     FOREIGN KEY (id_conteudo) REFERENCES conteudo_obj_tab(id_conteudo),
-    FOREIGN KEY (id_perfil) REFERENCES perfil_obj_tab(id_perfil),
-    FOREIGN KEY (email) REFERENCES conta_obj_tab(email)
+    FOREIGN KEY (id_perfil, email) REFERENCES perfil_obj_tab(id_perfil, conta_email)
 );
