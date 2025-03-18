@@ -1,6 +1,4 @@
----------------------------------------------------------------------
 -- 1. Tipo Plano (final, pois não esperamos herança) 
----------------------------------------------------------------------
 CREATE OR REPLACE TYPE plano_t AS OBJECT (
     id_plano              NUMBER,
     nome                  VARCHAR2(20),
@@ -18,9 +16,8 @@ CREATE OR REPLACE TYPE BODY plano_t AS
 END;
 /
 
----------------------------------------------------------------------
--- 2. Tipo Telefone (usado no VARRAY)
----------------------------------------------------------------------
+
+-- 2. Tipo Telefone
 CREATE OR REPLACE TYPE telefone_t AS OBJECT (
     telefone VARCHAR2(15)
 ) FINAL;
@@ -30,9 +27,8 @@ CREATE OR REPLACE TYPE telefone_t AS OBJECT (
 CREATE OR REPLACE TYPE telefone_varray AS VARRAY(10) OF telefone_t;
 /
 
----------------------------------------------------------------------
+    
 -- 3. Tipo Conta (com atributo multivalorado para telefones)
----------------------------------------------------------------------
 CREATE OR REPLACE TYPE conta_t AS OBJECT (
     email         VARCHAR2(255),
     primeiro_nome VARCHAR2(30),
@@ -40,7 +36,7 @@ CREATE OR REPLACE TYPE conta_t AS OBJECT (
     senha         VARCHAR2(40),
     telefones     telefone_varray,  -- atributo multivalorado
     FINAL MEMBER FUNCTION exibir_nome RETURN VARCHAR2
-) NOT FINAL;  -- Permite herança se necessário
+) NOT FINAL;  
 /
 
 CREATE OR REPLACE TYPE BODY conta_t AS 
@@ -51,9 +47,8 @@ CREATE OR REPLACE TYPE BODY conta_t AS
 END;
 /
 
----------------------------------------------------------------------
--- 4. Tipo Perfil (não instanciável, pois será usado como superclasse)
----------------------------------------------------------------------
+
+-- 4. Tipo Perfil
 CREATE OR REPLACE TYPE genero_favorito_t AS OBJECT (
 	nome_genero VARCHAR2(50)
 ) FINAL;
@@ -84,9 +79,7 @@ END;
 /
 
 
----------------------------------------------------------------------
 -- 5. Tipo Avaliacao 
----------------------------------------------------------------------
 CREATE OR REPLACE TYPE avaliacao_t AS OBJECT (
     id_avaliacao NUMBER,
     qualidade    NUMBER,
@@ -125,9 +118,8 @@ CREATE OR REPLACE TYPE BODY avaliacao_t AS
 END;
 /
 
----------------------------------------------------------------------
+
 -- 6. Tipo Conteudo (base para Filme e outros; NOT FINAL para permitir herança)
----------------------------------------------------------------------
 CREATE OR REPLACE TYPE conteudo_t AS OBJECT (
     id_conteudo     NUMBER,
     nome            VARCHAR2(100),
@@ -138,7 +130,7 @@ CREATE OR REPLACE TYPE conteudo_t AS OBJECT (
     producao        VARCHAR2(255),
     sucessor        REF conteudo_t,
     MEMBER FUNCTION descricao RETURN VARCHAR2
-) NOT FINAL;
+) NOT FINAL NOT INSTANTIABLE;
 /
 
 CREATE OR REPLACE TYPE BODY conteudo_t AS 
@@ -149,9 +141,8 @@ CREATE OR REPLACE TYPE BODY conteudo_t AS
 END;
 /
 
----------------------------------------------------------------------
--- 7. Tipo Filme (herda de conteudo_t; NOT FINAL se houver possibilidade de herdar de Filme)
----------------------------------------------------------------------
+
+-- 7. Tipo Filme
 CREATE OR REPLACE TYPE filme_t UNDER conteudo_t (
     nome_sequencia VARCHAR2(255),
     OVERRIDING MEMBER FUNCTION descricao RETURN VARCHAR2
@@ -176,9 +167,7 @@ END;
 
 /
 
----------------------------------------------------------------------
--- 8. Tipo Serie 
----------------------------------------------------------------------
+-- 8. Tipo Serie
 
 CREATE OR REPLACE TYPE serie_t AS OBJECT (
     id_serie         NUMBER,
@@ -196,9 +185,7 @@ CREATE OR REPLACE TYPE BODY serie_t AS
 END;
 /
 
----------------------------------------------------------------------
 -- 9. Tipo Episodio 
----------------------------------------------------------------------
 CREATE OR REPLACE TYPE episodio_t UNDER conteudo_t (
     temporada         NUMBER,
     serie_pertencente REF serie_t,
@@ -218,9 +205,7 @@ END;
 /
 /
 
----------------------------------------------------------------------
 -- 10. Tipo plano_permite_filme_obj_tab
----------------------------------------------------------------------
 CREATE OR REPLACE TYPE plano_permite_filme_t AS OBJECT (
     id_filme          NUMBER, -- com REF não pode ser chave primária
     id_plano          NUMBER, -- com REF não pode ser chave primária
@@ -260,9 +245,7 @@ CREATE OR REPLACE TYPE BODY plano_permite_episodio_t AS
 END;
 /
 
----------------------------------------------------------------------
--- 11. Tipo PerfilConsomeConteudo
----------------------------------------------------------------------
+
 CREATE OR REPLACE TYPE perfil_consome_filme_t AS OBJECT (
     id_filme            NUMBER, -- com REF não pode ser chave primária
     id_perfil           NUMBER, -- com REF não pode ser chave primária
@@ -294,31 +277,28 @@ CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS
         qualidade_self NUMBER;
         qualidade_outro NUMBER;
     BEGIN
-        -- Primeiro, compara o progresso percentual
         IF self.progresso_percentual > outro.progresso_percentual THEN
             RETURN 1;
         ELSIF self.progresso_percentual < outro.progresso_percentual THEN
             RETURN -1;
         END IF;
 
-        -- Comparação de qualidade da avaliação
         IF self.avaliacao IS NOT NULL THEN
             SELECT qualidade INTO qualidade_self 
             FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO: Referência desreferenciada corretamente
+            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  
         ELSE
-            qualidade_self := 0; -- Se não tiver avaliação, assume 0
+            qualidade_self := 0; 
         END IF;
 
         IF outro.avaliacao IS NOT NULL THEN
             SELECT qualidade INTO qualidade_outro 
             FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO
+            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao; 
         ELSE
             qualidade_outro := 0;
         END IF;
 
-        -- Comparação final
         IF qualidade_self > qualidade_outro THEN
             RETURN 1;
         ELSIF qualidade_self < qualidade_outro THEN
@@ -374,14 +354,8 @@ CREATE TABLE avaliacao_obj_tab OF avaliacao_t (
 );
 
 
-CREATE TABLE conteudo_obj_tab OF conteudo_t (
-    PRIMARY KEY (id_conteudo),
-    nome NOT NULL,
-    data_lancamento NOT NULL
-);
-
 CREATE TABLE filme_obj_tab OF filme_t (
-    PRIMARY KEY (id_conteudo), -- n sei se precisa repetir
+    PRIMARY KEY (id_conteudo), 
     nome NOT NULL,
     data_lancamento NOT NULL
 );
@@ -441,31 +415,28 @@ CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS -- repetindo para adiciona
         qualidade_self NUMBER;
         qualidade_outro NUMBER;
     BEGIN
-        -- Primeiro, compara o progresso percentual
         IF self.progresso_percentual > outro.progresso_percentual THEN
             RETURN 1;
         ELSIF self.progresso_percentual < outro.progresso_percentual THEN
             RETURN -1;
         END IF;
 
-        -- Comparação de qualidade da avaliação
         IF self.avaliacao IS NOT NULL THEN
             SELECT qualidade INTO qualidade_self 
             FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO: Referência desreferenciada corretamente
+            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  
         ELSE
-            qualidade_self := 0; -- Se não tiver avaliação, assume 0
+            qualidade_self := 0;
         END IF;
 
         IF outro.avaliacao IS NOT NULL THEN
             SELECT qualidade INTO qualidade_outro 
             FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO
+            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao;  
         ELSE
             qualidade_outro := 0;
         END IF;
 
-        -- Comparação final
         IF qualidade_self > qualidade_outro THEN
             RETURN 1;
         ELSIF qualidade_self < qualidade_outro THEN
@@ -477,12 +448,10 @@ CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS -- repetindo para adiciona
     MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) IS
         v_consumo perfil_consome_filme_t;
     BEGIN
-        -- Obtém o objeto da tabela usando VALUE
         SELECT VALUE(p) INTO v_consumo 
         FROM perfil_consome_filme_obj_tab p
         WHERE p.id_perfil = id_perfil AND p.id_filme = id_conteudo;
 
-        -- Exibe informações do consumo
         DBMS_OUTPUT.PUT_LINE('Perfil: ' || v_consumo.id_perfil || 
                              ', Conteúdo: ' || v_consumo.id_filme || 
                              ', Progresso: ' || v_consumo.progresso_percentual || '%');
@@ -497,15 +466,13 @@ CREATE TABLE perfil_consome_episodio_obj_tab OF perfil_consome_episodio_t (
     avaliacao WITH ROWID REFERENCES avaliacao_obj_tab
 );
 
-------------------------------------------
 -- INÍCIO DO POVOAMENTO
-------------------------------------------
 
 INSERT INTO plano_obj_tab VALUES (plano_t(1, 'Básico', 10.00, 6));
 INSERT INTO plano_obj_tab VALUES (plano_t(2, 'Premium', 15.00, 3));
 INSERT INTO plano_obj_tab VALUES (plano_t(3, 'Ultra', 40.00, 0));
 
--- Inserir José Silva com 2 telefones
+
 INSERT INTO conta_obj_tab 
 VALUES (
     conta_t(
@@ -517,7 +484,6 @@ VALUES (
     )
 );
 
--- Inserir Maria Santos com 1 telefone
 INSERT INTO conta_obj_tab 
 VALUES (
     conta_t(
@@ -529,7 +495,6 @@ VALUES (
     )
 );
 
--- Inserir Pedro Oliveira com 2 telefones
 INSERT INTO conta_obj_tab 
 VALUES (
     conta_t(
@@ -541,7 +506,6 @@ VALUES (
     )
 );
 
--- Inserir Ana Pereira com 1 telefone
 INSERT INTO conta_obj_tab 
 VALUES (
     conta_t(
@@ -553,7 +517,6 @@ VALUES (
     )
 );
 
--- Inserir Lucas Rodrigues com 2 telefones
 INSERT INTO conta_obj_tab 
 VALUES (
     conta_t(
@@ -565,7 +528,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para José Silva com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     1, 
@@ -579,7 +542,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para José Silva com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     2, 
@@ -593,7 +556,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Maria Santos com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     3, 
@@ -607,7 +570,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Maria Santos com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     4, 
@@ -620,7 +583,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Maria Santos com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     5, 
@@ -634,7 +597,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Pedro Oliveira com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     6, 
@@ -648,7 +611,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Pedro Oliveira com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     7, 
@@ -662,7 +625,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Ana Pereira com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     8, 
@@ -676,7 +639,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Ana Pereira com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     9, 
@@ -689,7 +652,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Ana Pereira com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     10, 
@@ -703,7 +666,7 @@ VALUES (
     )
 );
 
--- Inserir perfil para Lucas Rodrigues com gêneros favoritos
+
 INSERT INTO perfil_obj_tab 
 VALUES (
     11, 
@@ -716,7 +679,7 @@ VALUES (
     )
 );
 
--- Criar os objetos de Filmes
+
 DECLARE
   c1 filme_t;
   c2 filme_t;
@@ -747,7 +710,7 @@ DECLARE
   c27 filme_t;
   c28 filme_t;
 BEGIN
-  -- Inserir os filmes e criar as referências de sucessor
+  -- criar as referências de sucessor
   c1 := filme_t(1, 'O Senhor dos Anéis: A Sociedade do Anel', TO_DATE('19-12-2001', 'DD-MM-YYYY'), 'Aventura', 178, 'Fran Walsh, Philippa Boyens, Peter Jackson', 'New Line Cinema', NULL, NULL);
   c2 := filme_t(2, 'Piratas do Caribe: A Maldição do Pérola Negra', TO_DATE('09-07-2003', 'DD-MM-YYYY'), 'Aventura', 143, 'Ted Elliott, Terry Rossio', 'Walt Disney Pictures', NULL, NULL);
   c3 := filme_t(3, 'O Rei Leão', TO_DATE('24-06-1994', 'DD-MM-YYYY'), 'Animação', 88, 'Irene Mecchi, Jonathan Roberts, Linda Woolverton', 'Walt Disney Feature Animation', NULL, NULL);
@@ -776,7 +739,7 @@ BEGIN
   c26 := filme_t(17, 'Os Vingadores', TO_DATE('04-05-2012', 'DD-MM-YYYY'), 'Ação', 143, 'Joss Whedon', 'Marvel Studios', NULL, 'Vingadores');
   c27 := filme_t(16, 'Capitão América: O Primeiro Vingador', TO_DATE('22-07-2011', 'DD-MM-YYYY'), 'Aventura', 124, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL, NULL);
 
-  -- Inserir os filmes na tabela
+  -- inserir os filmes na tabela
   INSERT INTO filme_obj_tab VALUES (c1);
   INSERT INTO filme_obj_tab VALUES (c2);
   INSERT INTO filme_obj_tab VALUES (c3);
@@ -829,7 +792,6 @@ INSERT INTO serie_obj_tab VALUES (serie_t(4, 10, 'Dark'));
 
 -- Episódios
 
--- Criar os objetos de Episódios
 DECLARE
   c66 episodio_t;
   c65 episodio_t;
@@ -870,7 +832,7 @@ DECLARE
   c30 episodio_t;
   c29 episodio_t;
 BEGIN
-  -- Inserir os episodios
+  -- inserir os episodios
   c66 := episodio_t(66, 'Dark - S01E10 - Alfa e Ômega', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 55, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
   c65 := episodio_t(65, 'Dark - S01E09 - Tudo é Agora', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 51, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
   c64 := episodio_t(64, 'Dark - S01E08 - O que se Semeia, se Colhe', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 50, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
@@ -910,7 +872,7 @@ BEGIN
   c30 := episodio_t(30, 'Breaking Bad - S01E02 - Cat''s in the Bag...', TO_DATE('27-01-2008', 'DD-MM-YYYY'), 'Drama', 48, 'Vince Gilligan', 'Sony Pictures Television', NULL, 1, NULL);
   c29 := episodio_t(29, 'Breaking Bad - S01E01 - Pilot', TO_DATE('20-01-2008', 'DD-MM-YYYY'), 'Drama', 58, 'Vince Gilligan', 'Sony Pictures Television', NULL, 1, NULL);
 
-  -- Inserir os episodios na tabela
+  -- inserir os episodios na tabela
   INSERT INTO episodio_obj_tab VALUES (c66);
   INSERT INTO episodio_obj_tab VALUES (c65);
   INSERT INTO episodio_obj_tab VALUES (c64);
@@ -950,7 +912,7 @@ BEGIN
   INSERT INTO episodio_obj_tab VALUES (c30);
   INSERT INTO episodio_obj_tab VALUES (c29);
 
-  -- Inserir sucessores dos episodios
+  -- inserir sucessores dos episodios
 
   UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 66) WHERE f.id_conteudo = 65;
   UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 65) WHERE f.id_conteudo = 64;
@@ -1721,7 +1683,7 @@ DECLARE
     v_avaliacao_ref_13 REF avaliacao_t;
     v_avaliacao_ref_14 REF avaliacao_t;
 BEGIN
-    -- Buscar os REFs das avaliações
+    -- buscar os REFs das avaliações
     SELECT REF(a) INTO v_avaliacao_ref_1 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 5;
     SELECT REF(a) INTO v_avaliacao_ref_2 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 12;
     SELECT REF(a) INTO v_avaliacao_ref_3 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 8;
@@ -1736,7 +1698,7 @@ BEGIN
     SELECT REF(a) INTO v_avaliacao_ref_12 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 1;
     SELECT REF(a) INTO v_avaliacao_ref_13 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 14;
 
-    -- Inserir os registros na tabela perfil_consome_filme_obj_tab
+    -- inserir os registros na tabela
     INSERT INTO perfil_consome_filme_obj_tab VALUES (
         perfil_consome_filme_t(1, 1, 'jose.silva@email.com', TO_TIMESTAMP('01/02/2025 14:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 75, v_avaliacao_ref_1)
     );
@@ -1805,7 +1767,7 @@ DECLARE
     v_avaliacao_ref_20 REF avaliacao_t;
     v_avaliacao_ref_21 REF avaliacao_t;
 BEGIN
-    -- Buscar os REFs das avaliações
+    -- buscar os REFs das avaliações
     SELECT REF(a) INTO v_avaliacao_ref_15 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 9;
     SELECT REF(a) INTO v_avaliacao_ref_16 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 10;
     SELECT REF(a) INTO v_avaliacao_ref_17 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 13;
@@ -1814,7 +1776,7 @@ BEGIN
     SELECT REF(a) INTO v_avaliacao_ref_20 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 19;
     SELECT REF(a) INTO v_avaliacao_ref_21 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 17;
 
-    -- Inserir os registros na tabela perfil_consome_episodio_obj_tab
+    -- inserir os registros na tabela
     INSERT INTO perfil_consome_episodio_obj_tab VALUES (
         perfil_consome_episodio_t(30, 2, 'jose.silva@email.com', TO_TIMESTAMP('14/02/2025 15:45:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 50, v_avaliacao_ref_15)
     );
