@@ -219,8 +219,10 @@ END;
 /
 
 ---------------------------------------------------------------------
--- 10. Tipo plano_permite_filme_obj_tabREATE OR plano_permite_filme_t(REPLACE TYPE plano_permite_filme_t AS OBJECT (
-    id_filme          NUMBER, -- co)m REF não pode ser chave primária
+-- 10. Tipo plano_permite_filme_obj_tab
+---------------------------------------------------------------------
+CREATE OR REPLACE TYPE plano_permite_filme_t AS OBJECT (
+    id_filme          NUMBER, -- com REF não pode ser chave primária
     id_plano          NUMBER, -- com REF não pode ser chave primária
     email             VARCHAR2(255), -- com REF não pode ser chave primária
     data_inicio       DATE,
@@ -262,8 +264,8 @@ END;
 ---------------------------------------------------------------------
 -- 11. Tipo PerfilConsomeConteudo
 ---------------------------------------------------------------------
-CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
-    id_conteudo            NUMBER, -- com REF não pode ser chave primária
+CREATE OR REPLACE TYPE perfil_consome_filme_t AS OBJECT (
+    id_filme            NUMBER, -- com REF não pode ser chave primária
     id_perfil           NUMBER, -- com REF não pode ser chave primária
     email               VARCHAR2(255), -- com REF não pode ser chave primária
     data_hora           TIMESTAMP,
@@ -272,10 +274,10 @@ CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
     avaliacao            REF avaliacao_t,
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2,
     MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER),
-    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER
+    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER
 ) FINAL;
     
-CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
+CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS 
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
     BEGIN
        RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
@@ -289,7 +291,7 @@ CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS
         self.progresso_percentual := novo_progresso;
     END;
 
-    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER IS
+    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER IS
         qualidade_self NUMBER;
         qualidade_outro NUMBER;
     BEGIN
@@ -329,6 +331,15 @@ CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS
 
 END;
 
+CREATE OR REPLACE TYPE perfil_consome_episodio_t AS OBJECT (
+    id_episodio            NUMBER, -- com REF não pode ser chave primária
+    id_perfil           NUMBER, -- com REF não pode ser chave primária
+    email               VARCHAR2(255), -- com REF não pode ser chave primária
+    data_hora           TIMESTAMP,
+    dispositivo_utilizado VARCHAR2(100),
+    progresso_percentual NUMBER,
+    avaliacao            REF avaliacao_t
+) FINAL;
 
 
 /
@@ -405,14 +416,15 @@ CREATE TABLE plano_permite_episodio_obj_tab OF plano_permite_episodio_t (
     data_inicio NOT NULL
 );
 
-CREATE TABLE perfil_consome_conteudo_obj_tab OF perfil_consome_conteudo_t (
-    PRIMARY KEY (id_conteudo, id_perfil, email, data_hora),
-    FOREIGN KEY (id_conteudo) REFERENCES conteudo_obj_tab(id_conteudo),
+CREATE TABLE perfil_consome_filme_obj_tab OF perfil_consome_filme_t (
+    PRIMARY KEY (id_filme, id_perfil, email, data_hora),
+    FOREIGN KEY (id_filme) REFERENCES filme_obj_tab(id_conteudo),
     FOREIGN KEY (id_perfil, email) REFERENCES perfil_obj_tab(id_perfil, conta_email),
     avaliacao WITH ROWID REFERENCES avaliacao_obj_tab
 );
-ALTER TYPE perfil_consome_conteudo_t ADD MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) CASCADE;
-CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
+ALTER TYPE perfil_consome_filme_t ADD MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) CASCADE;
+
+CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS 
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
     BEGIN
        RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
@@ -426,7 +438,7 @@ CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS
         self.progresso_percentual := novo_progresso;
     END;
 
-    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER IS
+    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER IS
         qualidade_self NUMBER;
         qualidade_outro NUMBER;
     BEGIN
@@ -464,20 +476,31 @@ CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS
         END IF;
     END;
     MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) IS
-        v_consumo perfil_consome_conteudo_t;
+        v_consumo perfil_consome_filme_t;
     BEGIN
         -- Obtém o objeto da tabela usando VALUE
         SELECT VALUE(p) INTO v_consumo 
-        FROM perfil_consome_conteudo_obj_tab p
-        WHERE p.id_perfil = id_perfil AND p.id_conteudo = id_conteudo;
+        FROM perfil_consome_filme_obj_tab p
+        WHERE p.id_perfil = id_perfil AND p.id_filme = id_conteudo;
 
         -- Exibe informações do consumo
         DBMS_OUTPUT.PUT_LINE('Perfil: ' || v_consumo.id_perfil || 
-                             ', Conteúdo: ' || v_consumo.id_conteudo || 
+                             ', Conteúdo: ' || v_consumo.id_filme || 
                              ', Progresso: ' || v_consumo.progresso_percentual || '%');
     END;
 
 END;
+
+CREATE TABLE perfil_consome_episodio_obj_tab OF perfil_consome_episodio_t (
+    PRIMARY KEY (id_episodio, id_perfil, email, data_hora),
+    FOREIGN KEY (id_episodio) REFERENCES episodio_obj_tab(id_conteudo),
+    FOREIGN KEY (id_perfil, email) REFERENCES perfil_obj_tab(id_perfil, conta_email),
+    avaliacao WITH ROWID REFERENCES avaliacao_obj_tab
+);
+
+------------------------------------------
+-- INÍCIO DO POVOAMENTO
+------------------------------------------
 
 INSERT INTO plano_obj_tab VALUES (plano_t(1, 'Básico', 10.00, 6));
 INSERT INTO plano_obj_tab VALUES (plano_t(2, 'Premium', 15.00, 3));
@@ -1008,6 +1031,7 @@ BEGIN
   UPDATE episodio_obj_tab f SET f.serie_pertencente = (SELECT REF(s) FROM serie_obj_tab s WHERE s.id_serie = 1) WHERE f.id_conteudo = 31;
   UPDATE episodio_obj_tab f SET f.serie_pertencente = (SELECT REF(s) FROM serie_obj_tab s WHERE s.id_serie = 1) WHERE f.id_conteudo = 30;
 END;
+
 
 INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(1, 5, TO_TIMESTAMP('01-01-2024 14:30:00', 'DD-MM-YYYY HH24:MI:SS')));
 INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(2, 4, TO_TIMESTAMP('02-01-2024 16:45:00', 'DD-MM-YYYY HH24:MI:SS')));
@@ -1680,3 +1704,5 @@ INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(64, 
 INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
 
 INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+
