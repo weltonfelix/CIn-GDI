@@ -644,18 +644,18 @@ BEGIN
   c13 := conteudo_t(14, 'O Incrível Hulk', TO_DATE('13-06-2008', 'DD-MM-YYYY'), 'Ação', 112, 'Zak Penn', 'Marvel Studios', NULL);
   c14 := conteudo_t(15, 'Thor', TO_DATE('06-05-2011', 'DD-MM-YYYY'), 'Aventura', 115, 'Ashley Edward Miller, Zack Stentz, Don Payne', 'Marvel Studios', NULL);
   c15 := conteudo_t(28, 'Eternos', TO_DATE('05-11-2021', 'DD-MM-YYYY'), 'Aventura', 156, 'Chloé Zhao, Patrick Burleigh, Ryan Firpo', 'Marvel Studios', NULL);
-  c16 := conteudo_t(27, 'Homem-Aranha: Longe de Casa', TO_DATE('02-07-2019', 'DD-MM-YYYY'), 'Aventura', 129, 'Chris McKenna, Erik Sommers', 'Marvel Studios', c15);
-  c17 := conteudo_t(26, 'Vingadores: Ultimato', TO_DATE('26-04-2019', 'DD-MM-YYYY'), 'Ação', 181, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', c16);
-  c18 := conteudo_t(25, 'Vingadores: Guerra Infinita', TO_DATE('27-04-2018', 'DD-MM-YYYY'), 'Ação', 149, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', c17);
-  c19 := conteudo_t(24, 'Guardiões da Galáxia Vol. 2', TO_DATE('05-05-2017', 'DD-MM-YYYY'), 'Aventura', 136, 'James Gunn', 'Marvel Studios', c18);
-  c20 := conteudo_t(23, 'Doutor Estranho', TO_DATE('04-11-2016', 'DD-MM-YYYY'), 'Ficção Científica', 115, 'Jon Spaihts, Scott Derrickson, C. Robert Cargill', 'Marvel Studios', c19);
-  c21 := conteudo_t(22, 'Capitão América: Guerra Civil', TO_DATE('06-05-2016', 'DD-MM-YYYY'), 'Ação', 147, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', c20);
-  c22 := conteudo_t(21, 'Vingadores: Era de Ultron', TO_DATE('01-05-2015', 'DD-MM-YYYY'), 'Ação', 141, 'Joss Whedon', 'Marvel Studios', c21);
-  c23 := conteudo_t(20, 'Capitão América: O Soldado Invernal', TO_DATE('04-04-2014', 'DD-MM-YYYY'), 'Aventura', 136, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', c22);
-  c24 := conteudo_t(19, 'Thor: O Mundo Sombrio', TO_DATE('08-11-2013', 'DD-MM-YYYY'), 'Aventura', 112, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', c23);
-  c25 := conteudo_t(18, 'Homem de Ferro 3', TO_DATE('03-05-2013', 'DD-MM-YYYY'), 'Ação', 130, 'Drew Pearce, Shane Black', 'Marvel Studios', c24);
-  c26 := conteudo_t(17, 'Os Vingadores', TO_DATE('04-05-2012', 'DD-MM-YYYY'), 'Ação', 143, 'Joss Whedon', 'Marvel Studios', c25);
-  c27 := conteudo_t(16, 'Capitão América: O Primeiro Vingador', TO_DATE('22-07-2011', 'DD-MM-YYYY'), 'Aventura', 124, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', c26);
+  c16 := conteudo_t(27, 'Homem-Aranha: Longe de Casa', TO_DATE('02-07-2019', 'DD-MM-YYYY'), 'Aventura', 129, 'Chris McKenna, Erik Sommers', 'Marvel Studios', NULL);
+  c17 := conteudo_t(26, 'Vingadores: Ultimato', TO_DATE('26-04-2019', 'DD-MM-YYYY'), 'Ação', 181, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL);
+  c18 := conteudo_t(25, 'Vingadores: Guerra Infinita', TO_DATE('27-04-2018', 'DD-MM-YYYY'), 'Ação', 149, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL);
+  c19 := conteudo_t(24, 'Guardiões da Galáxia Vol. 2', TO_DATE('05-05-2017', 'DD-MM-YYYY'), 'Aventura', 136, 'James Gunn', 'Marvel Studios', NULL);
+  c20 := conteudo_t(23, 'Doutor Estranho', TO_DATE('04-11-2016', 'DD-MM-YYYY'), 'Ficção Científica', 115, 'Jon Spaihts, Scott Derrickson, C. Robert Cargill', 'Marvel Studios', NULL);
+  c21 := conteudo_t(22, 'Capitão América: Guerra Civil', TO_DATE('06-05-2016', 'DD-MM-YYYY'), 'Ação', 147, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL);
+  c22 := conteudo_t(21, 'Vingadores: Era de Ultron', TO_DATE('01-05-2015', 'DD-MM-YYYY'), 'Ação', 141, 'Joss Whedon', 'Marvel Studios', NULL);
+  c23 := conteudo_t(20, 'Capitão América: O Soldado Invernal', TO_DATE('04-04-2014', 'DD-MM-YYYY'), 'Aventura', 136, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL);
+  c24 := conteudo_t(19, 'Thor: O Mundo Sombrio', TO_DATE('08-11-2013', 'DD-MM-YYYY'), 'Aventura', 112, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL);
+  c25 := conteudo_t(18, 'Homem de Ferro 3', TO_DATE('03-05-2013', 'DD-MM-YYYY'), 'Ação', 130, 'Drew Pearce, Shane Black', 'Marvel Studios', NULL);
+  c26 := conteudo_t(17, 'Os Vingadores', TO_DATE('04-05-2012', 'DD-MM-YYYY'), 'Ação', 143, 'Joss Whedon', 'Marvel Studios', NULL);
+  c27 := conteudo_t(16, 'Capitão América: O Primeiro Vingador', TO_DATE('22-07-2011', 'DD-MM-YYYY'), 'Aventura', 124, 'Christopher Markus, Stephen McFeely', 'Marvel Studios', NULL);
 
   -- Inserir os conteúdos na tabela
   INSERT INTO conteudo_obj_tab VALUES (c1);
@@ -685,6 +685,18 @@ BEGIN
   INSERT INTO conteudo_obj_tab VALUES (c25);
   INSERT INTO conteudo_obj_tab VALUES (c26);
   INSERT INTO conteudo_obj_tab VALUES (c27);
+
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 28) WHERE c.id_conteudo = 27;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 27) WHERE c.id_conteudo = 26;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 26) WHERE c.id_conteudo = 25;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 25) WHERE c.id_conteudo = 24;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 24) WHERE c.id_conteudo = 23;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 23) WHERE c.id_conteudo = 22;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 22) WHERE c.id_conteudo = 21;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 21) WHERE c.id_conteudo = 20;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 20) WHERE c.id_conteudo = 19;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 19) WHERE c.id_conteudo = 18;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 18) WHERE c.id_conteudo = 17;
+  UPDATE conteudo_obj_tab c SET c.sucessor = (SELECT REF(c2) FROM conteudo_obj_tab c2 WHERE c2.id_conteudo = 17) WHERE c.id_conteudo = 16;
+
 END;
-DELETE FROM conteudo_obj_tab;
-SELECT t.nome FROM conteudo_obj_tab t;
