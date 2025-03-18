@@ -984,3 +984,24 @@ BEGIN
   UPDATE episodio_obj_tab f SET f.serie_pertencente = (SELECT REF(s) FROM serie_obj_tab s WHERE s.id_serie = 1) WHERE f.id_conteudo = 31;
   UPDATE episodio_obj_tab f SET f.serie_pertencente = (SELECT REF(s) FROM serie_obj_tab s WHERE s.id_serie = 1) WHERE f.id_conteudo = 30;
 END;
+
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(1, 5, TO_TIMESTAMP('01-01-2024 14:30:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(2, 4, TO_TIMESTAMP('02-01-2024 16:45:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(3, 3, TO_TIMESTAMP('03-01-2024 12:15:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(4, 5, TO_TIMESTAMP('04-01-2024 18:20:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(5, 2, TO_TIMESTAMP('05-01-2024 10:00:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(6, 4, TO_TIMESTAMP('06-01-2024 20:10:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(7, 1, TO_TIMESTAMP('07-01-2024 09:30:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(8, 5, TO_TIMESTAMP('08-01-2024 14:50:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(9, 3, TO_TIMESTAMP('09-01-2024 11:40:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(10, 2, TO_TIMESTAMP('10-01-2024 22:05:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(11, 5, TO_TIMESTAMP('11-01-2024 13:25:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(12, 4, TO_TIMESTAMP('12-01-2024 17:35:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(13, 1, TO_TIMESTAMP('13-01-2024 08:20:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(14, 3, TO_TIMESTAMP('14-01-2024 15:45:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(15, 4, TO_TIMESTAMP('15-01-2024 19:55:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(16, 2, TO_TIMESTAMP('16-01-2024 10:10:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(17, 5, TO_TIMESTAMP('17-01-2024 21:20:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(18, 3, TO_TIMESTAMP('18-01-2024 07:45:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(19, 1, TO_TIMESTAMP('19-01-2024 16:30:00', 'DD-MM-YYYY HH24:MI:SS')));
+INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(20, 4, TO_TIMESTAMP('20-01-2024 12:00:00', 'DD-MM-YYYY HH24:MI:SS')));
