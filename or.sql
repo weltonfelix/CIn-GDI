@@ -250,7 +250,6 @@ CREATE OR REPLACE TYPE plano_permite_episodio_t AS OBJECT (
     FINAL MEMBER FUNCTION periodo RETURN VARCHAR2
 ) FINAL;
 /
-    DROP TYPE plano_permite_episodio_t
 
 CREATE OR REPLACE TYPE BODY plano_permite_episodio_t AS 
     FINAL MEMBER FUNCTION periodo RETURN VARCHAR2 IS
@@ -424,7 +423,7 @@ CREATE TABLE perfil_consome_filme_obj_tab OF perfil_consome_filme_t (
 );
 ALTER TYPE perfil_consome_filme_t ADD MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) CASCADE;
 
-CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS 
+CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS -- repetindo para adicionar o novo procedimento
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
     BEGIN
        RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
@@ -1705,4 +1704,144 @@ INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 
 
 INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
 
+    
+DECLARE
+    v_avaliacao_ref_1 REF avaliacao_t;
+    v_avaliacao_ref_2 REF avaliacao_t;
+    v_avaliacao_ref_3 REF avaliacao_t;
+    v_avaliacao_ref_4 REF avaliacao_t;
+    v_avaliacao_ref_5 REF avaliacao_t;
+    v_avaliacao_ref_6 REF avaliacao_t;
+    v_avaliacao_ref_7 REF avaliacao_t;
+    v_avaliacao_ref_8 REF avaliacao_t;
+    v_avaliacao_ref_9 REF avaliacao_t;
+    v_avaliacao_ref_10 REF avaliacao_t;
+    v_avaliacao_ref_11 REF avaliacao_t;
+    v_avaliacao_ref_12 REF avaliacao_t;
+    v_avaliacao_ref_13 REF avaliacao_t;
+    v_avaliacao_ref_14 REF avaliacao_t;
+BEGIN
+    -- Buscar os REFs das avaliações
+    SELECT REF(a) INTO v_avaliacao_ref_1 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 5;
+    SELECT REF(a) INTO v_avaliacao_ref_2 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 12;
+    SELECT REF(a) INTO v_avaliacao_ref_3 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 8;
+    SELECT REF(a) INTO v_avaliacao_ref_4 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 3;
+    SELECT REF(a) INTO v_avaliacao_ref_5 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 15;
+    SELECT REF(a) INTO v_avaliacao_ref_6 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 7;
+    SELECT REF(a) INTO v_avaliacao_ref_7 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 18;
+    SELECT REF(a) INTO v_avaliacao_ref_8 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 11;
+    SELECT REF(a) INTO v_avaliacao_ref_9 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 2;
+    SELECT REF(a) INTO v_avaliacao_ref_10 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 20;
+    SELECT REF(a) INTO v_avaliacao_ref_11 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 6;
+    SELECT REF(a) INTO v_avaliacao_ref_12 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 1;
+    SELECT REF(a) INTO v_avaliacao_ref_13 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 14;
 
+    -- Inserir os registros na tabela perfil_consome_filme_obj_tab
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(1, 1, 'jose.silva@email.com', TO_TIMESTAMP('01/02/2025 14:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 75, v_avaliacao_ref_1)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(2, 2, 'jose.silva@email.com', TO_TIMESTAMP('02/02/2025 16:45:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 50, v_avaliacao_ref_2)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(3, 3, 'maria.santos@email.com', TO_TIMESTAMP('03/02/2025 12:15:00', 'DD/MM/YYYY HH24:MI:SS'), 'Tablet', 80, v_avaliacao_ref_3)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(4, 4, 'maria.santos@email.com', TO_TIMESTAMP('04/02/2025 18:20:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 95, v_avaliacao_ref_4)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(5, 5, 'maria.santos@email.com', TO_TIMESTAMP('05/02/2025 10:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 60, v_avaliacao_ref_5)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(6, 6, 'pedro.oliveira@email.com', TO_TIMESTAMP('06/02/2025 20:10:00', 'DD/MM/YYYY HH24:MI:SS'), 'Tablet', 40, v_avaliacao_ref_6)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(7, 7, 'pedro.oliveira@email.com', TO_TIMESTAMP('07/02/2025 09:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 90, v_avaliacao_ref_7)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(8, 8, 'ana.pereira@email.com', TO_TIMESTAMP('08/02/2025 14:50:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 85, v_avaliacao_ref_8)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(10, 9, 'ana.pereira@email.com', TO_TIMESTAMP('09/02/2025 11:40:00', 'DD/MM/YYYY HH24:MI:SS'), 'Tablet', 55, v_avaliacao_ref_9)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(12, 10, 'ana.pereira@email.com', TO_TIMESTAMP('10/02/2025 22:05:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 35, v_avaliacao_ref_10)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(15, 11, 'lucas.rodrigues@email.com', TO_TIMESTAMP('11/02/2025 13:25:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 70, v_avaliacao_ref_11)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(25, 1, 'jose.silva@email.com', TO_TIMESTAMP('13/02/2025 08:20:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 45, v_avaliacao_ref_12)
+    );
+
+    INSERT INTO perfil_consome_filme_obj_tab VALUES (
+        perfil_consome_filme_t(20, 11, 'lucas.rodrigues@email.com', TO_TIMESTAMP('12/02/2025 17:35:00', 'DD/MM/YYYY HH24:MI:SS'), 'Tablet', 80, v_avaliacao_ref_13)
+    );
+
+    COMMIT;
+END;
+/
+
+
+SELECT p.id_filme FROM perfil_consome_filme_obj_tab p;
+
+DECLARE
+    v_avaliacao_ref_15 REF avaliacao_t;
+    v_avaliacao_ref_16 REF avaliacao_t;
+    v_avaliacao_ref_17 REF avaliacao_t;
+    v_avaliacao_ref_18 REF avaliacao_t;
+    v_avaliacao_ref_19 REF avaliacao_t;
+    v_avaliacao_ref_20 REF avaliacao_t;
+    v_avaliacao_ref_21 REF avaliacao_t;
+BEGIN
+    -- Buscar os REFs das avaliações
+    SELECT REF(a) INTO v_avaliacao_ref_15 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 9;
+    SELECT REF(a) INTO v_avaliacao_ref_16 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 10;
+    SELECT REF(a) INTO v_avaliacao_ref_17 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 13;
+    SELECT REF(a) INTO v_avaliacao_ref_18 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 4;
+    SELECT REF(a) INTO v_avaliacao_ref_19 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 16;
+    SELECT REF(a) INTO v_avaliacao_ref_20 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 19;
+    SELECT REF(a) INTO v_avaliacao_ref_21 FROM avaliacao_obj_tab a WHERE a.id_avaliacao = 17;
+
+    -- Inserir os registros na tabela perfil_consome_episodio_obj_tab
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(30, 2, 'jose.silva@email.com', TO_TIMESTAMP('14/02/2025 15:45:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 50, v_avaliacao_ref_15)
+    );
+
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(35, 3, 'maria.santos@email.com', TO_TIMESTAMP('15/02/2025 19:55:00', 'DD/MM/YYYY HH24:MI:SS'), 'Tablet', 95, v_avaliacao_ref_16)
+    );
+
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(40, 4, 'maria.santos@email.com', TO_TIMESTAMP('16/02/2025 10:10:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 85, v_avaliacao_ref_17)
+    );
+
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(45, 5, 'maria.santos@email.com', TO_TIMESTAMP('17/02/2025 21:20:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 20, v_avaliacao_ref_18)
+    );
+
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(50, 6, 'pedro.oliveira@email.com', TO_TIMESTAMP('18/02/2025 07:45:00', 'DD/MM/YYYY HH24:MI:SS'), 'Tablet', 75, v_avaliacao_ref_19)
+    );
+
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(55, 7, 'pedro.oliveira@email.com', TO_TIMESTAMP('19/02/2025 16:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 90, v_avaliacao_ref_20)
+    );
+
+    INSERT INTO perfil_consome_episodio_obj_tab VALUES (
+        perfil_consome_episodio_t(60, 8, 'ana.pereira@email.com', TO_TIMESTAMP('20/02/2025 12:00:00', 'DD/MM/YYYY HH24:MI:SS'), 'Computador', 65, v_avaliacao_ref_21)
+    );
+
+    COMMIT;
+END;
