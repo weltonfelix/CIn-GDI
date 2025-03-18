@@ -219,10 +219,8 @@ END;
 /
 
 ---------------------------------------------------------------------
--- 10. Tipo PlanoPermiteConteudo
----------------------------------------------------------------------
-CREATE OR REPLACE TYPE plano_permite_conteudo_t AS OBJECT (
-    id_conteudo       NUMBER, -- com REF não pode ser chave primária
+-- 10. Tipo plano_permite_filme_obj_tabREATE OR plano_permite_filme_t(REPLACE TYPE plano_permite_filme_t AS OBJECT (
+    id_filme          NUMBER, -- co)m REF não pode ser chave primária
     id_plano          NUMBER, -- com REF não pode ser chave primária
     email             VARCHAR2(255), -- com REF não pode ser chave primária
     data_inicio       DATE,
@@ -232,7 +230,27 @@ CREATE OR REPLACE TYPE plano_permite_conteudo_t AS OBJECT (
 ) FINAL;
 /
 
-CREATE OR REPLACE TYPE BODY plano_permite_conteudo_t AS 
+CREATE OR REPLACE TYPE BODY plano_permite_filme_t AS 
+    FINAL MEMBER FUNCTION periodo RETURN VARCHAR2 IS
+    BEGIN
+       RETURN 'De ' || TO_CHAR(data_inicio, 'DD/MM/YYYY') || ' até ' ||
+              CASE WHEN data_fim IS NOT NULL THEN TO_CHAR(data_fim, 'DD/MM/YYYY') ELSE 'indeterminado' END;
+    END;
+END;
+
+CREATE OR REPLACE TYPE plano_permite_episodio_t AS OBJECT (
+    id_episodio       NUMBER, -- com REF não pode ser chave primária
+    id_plano          NUMBER, -- com REF não pode ser chave primária
+    email             VARCHAR2(255), -- com REF não pode ser chave primária
+    data_inicio       DATE,
+    data_fim          DATE,
+    desconto_aplicado NUMBER(5,2),
+    FINAL MEMBER FUNCTION periodo RETURN VARCHAR2
+) FINAL;
+/
+    DROP TYPE plano_permite_episodio_t
+
+CREATE OR REPLACE TYPE BODY plano_permite_episodio_t AS 
     FINAL MEMBER FUNCTION periodo RETURN VARCHAR2 IS
     BEGIN
        RETURN 'De ' || TO_CHAR(data_inicio, 'DD/MM/YYYY') || ' até ' ||
@@ -245,7 +263,7 @@ END;
 -- 11. Tipo PerfilConsomeConteudo
 ---------------------------------------------------------------------
 CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
-    id_conteudo         NUMBER, -- com REF não pode ser chave primária
+    id_conteudo            NUMBER, -- com REF não pode ser chave primária
     id_perfil           NUMBER, -- com REF não pode ser chave primária
     email               VARCHAR2(255), -- com REF não pode ser chave primária
     data_hora           TIMESTAMP,
@@ -255,10 +273,7 @@ CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2,
     MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER),
     ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER
-);
-
-/
-ALTER TYPE perfil_consome_conteudo_t FINAL;
+) FINAL;
     
 CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
@@ -373,9 +388,18 @@ CREATE TABLE episodio_obj_tab OF episodio_t (
     serie_pertencente SCOPE IS serie_obj_tab
 );
 
-CREATE TABLE plano_permite_conteudo_obj_tab OF plano_permite_conteudo_t (
-    PRIMARY KEY (id_conteudo, id_plano, email),
-    FOREIGN KEY (id_conteudo) REFERENCES conteudo_obj_tab(id_conteudo),
+CREATE TABLE plano_permite_filme_obj_tab OF plano_permite_filme_t (
+    PRIMARY KEY (id_filme, id_plano, email),
+    FOREIGN KEY (id_filme) REFERENCES filme_obj_tab(id_conteudo),
+    FOREIGN KEY (id_plano) REFERENCES plano_obj_tab(id_plano),
+    FOREIGN KEY (email) REFERENCES conta_obj_tab(email),
+    data_inicio NOT NULL
+);
+
+
+CREATE TABLE plano_permite_episodio_obj_tab OF plano_permite_episodio_t (
+    PRIMARY KEY (id_episodio, id_plano, email),
+    FOREIGN KEY (id_episodio) REFERENCES episodio_obj_tab(id_conteudo),
     FOREIGN KEY (id_plano) REFERENCES plano_obj_tab(id_plano),
     FOREIGN KEY (email) REFERENCES conta_obj_tab(email),
     data_inicio NOT NULL
@@ -1005,3 +1029,654 @@ INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(17, 5, TO_TIMESTAMP('17-01-202
 INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(18, 3, TO_TIMESTAMP('18-01-2024 07:45:00', 'DD-MM-YYYY HH24:MI:SS')));
 INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(19, 1, TO_TIMESTAMP('19-01-2024 16:30:00', 'DD-MM-YYYY HH24:MI:SS')));
 INSERT INTO avaliacao_obj_tab VALUES (avaliacao_t(20, 4, TO_TIMESTAMP('20-01-2024 12:00:00', 'DD-MM-YYYY HH24:MI:SS')));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(1, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(2, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(3, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(4, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(5, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(6, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(7, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(8, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(10, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(11, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(12, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(13, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(14, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(15, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(16, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(17, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(18, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(19, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(20, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(21, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(22, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(23, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(24, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(25, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(1, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(2, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(3, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(4, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(5, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(6, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(7, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(8, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(10, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(11, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(12, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(13, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(14, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(15, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(16, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(17, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(18, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(19, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(20, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(21, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(22, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(23, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(24, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(25, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(1, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(2, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(3, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(4, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(5, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(6, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(7, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(8, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(10, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(11, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(12, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(13, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(14, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(15, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(16, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(17, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(18, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(19, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(20, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(21, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(22, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(23, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(24, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(25, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(1, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(2, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(3, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(4, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(5, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(6, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(7, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(8, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(10, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(11, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(12, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(13, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(14, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(15, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(16, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(17, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(18, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(19, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(20, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(21, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(22, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(23, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(24, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(25, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(1, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(2, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(3, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(4, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(5, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(6, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(7, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(8, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(10, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(11, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(12, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(13, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(14, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(15, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(16, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(17, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(18, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(19, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(20, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(21, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(22, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(23, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(24, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(25, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(30, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(31, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(32, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(33, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(34, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(35, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(36, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(37, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(38, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(39, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(40, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(41, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(42, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(43, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(44, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(45, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(46, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(47, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(48, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(49, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(50, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(51, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(52, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(53, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(54, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(55, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(56, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(57, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(58, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(59, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(60, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(61, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(62, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(63, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(64, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(30, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(31, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(32, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(33, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(34, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(35, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(36, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(37, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(38, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(39, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(40, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(41, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(42, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(43, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(44, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(45, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(46, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(47, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(48, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(49, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(50, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(51, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(52, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(53, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(54, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(55, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(56, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(57, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(58, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(59, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(60, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(61, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(62, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(63, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(64, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 2, 'jose.silva@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(30, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(31, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(32, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(33, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(34, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(35, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(36, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(37, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(38, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(39, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(40, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(41, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(42, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(43, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(44, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(45, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(46, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(47, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(48, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(49, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(50, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(51, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(52, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(53, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(54, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(55, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(56, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(57, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(58, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(59, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(60, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(61, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(62, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(63, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(64, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 3, 'maria.santos@email.com', TO_DATE('24-05-2018', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(30, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(31, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(32, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(33, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(34, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(35, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(36, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(37, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(38, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(39, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(40, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(41, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(42, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(43, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(44, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(45, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(46, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(47, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(48, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(49, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(50, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(51, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(52, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(53, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(54, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(55, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(56, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(57, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(58, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(59, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(60, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(61, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(62, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(63, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(64, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 3, 'ana.pereira@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(30, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(31, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(32, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(33, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(34, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(35, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(36, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(37, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(38, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(39, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(40, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(41, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(42, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(43, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(44, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(45, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(46, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(47, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(48, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(49, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(50, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(51, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(52, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(53, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(54, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(55, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(56, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(57, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(58, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(59, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(60, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(61, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(62, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(63, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(64, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(65, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
+INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(66, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
