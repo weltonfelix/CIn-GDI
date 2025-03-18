@@ -751,7 +751,7 @@ DECLARE
   c30 episodio_t;
   c29 episodio_t;
 BEGIN
-  -- Inserir os filmes e criar as referências de sucessor
+  -- Inserir os episodios
   c66 := episodio_t(66, 'Dark - S01E10 - Alfa e Ômega', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 55, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
   c65 := episodio_t(65, 'Dark - S01E09 - Tudo é Agora', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 51, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
   c64 := episodio_t(64, 'Dark - S01E08 - O que se Semeia, se Colhe', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 50, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
@@ -791,7 +791,7 @@ BEGIN
   c30 := episodio_t(30, 'Breaking Bad - S01E02 - Cat''s in the Bag...', TO_DATE('27-01-2008', 'DD-MM-YYYY'), 'Drama', 48, 'Vince Gilligan', 'Sony Pictures Television', NULL, 1, NULL);
   c29 := episodio_t(29, 'Breaking Bad - S01E01 - Pilot', TO_DATE('20-01-2008', 'DD-MM-YYYY'), 'Drama', 58, 'Vince Gilligan', 'Sony Pictures Television', NULL, 1, NULL);
 
-  -- Inserir os filmes na tabela
+  -- Inserir os episodios na tabela
   INSERT INTO episodio_obj_tab VALUES (c66);
   INSERT INTO episodio_obj_tab VALUES (c65);
   INSERT INTO episodio_obj_tab VALUES (c64);
@@ -830,6 +830,8 @@ BEGIN
   INSERT INTO episodio_obj_tab VALUES (c31);
   INSERT INTO episodio_obj_tab VALUES (c30);
   INSERT INTO episodio_obj_tab VALUES (c29);
+
+  -- Inserir sucessores dos episodios
 
   UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 65) WHERE f.id_conteudo = 66;
   UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 64) WHERE f.id_conteudo = 65;
