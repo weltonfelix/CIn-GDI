@@ -54,12 +54,23 @@ END;
 ---------------------------------------------------------------------
 -- 4. Tipo Perfil (não instanciável, pois será usado como superclasse)
 ---------------------------------------------------------------------
+CREATE OR REPLACE TYPE genero_favorito_t AS OBJECT (
+	nome_genero VARCHAR2(50)
+) FINAL;
+CREATE OR REPLACE TYPE generos_favoritos_ntt AS TABLE OF genero_favorito_t;
+/
+
+
+
+/
+
 CREATE OR REPLACE TYPE perfil_t AS OBJECT (
     id_perfil    NUMBER,
     conta_email  VARCHAR2(255), -- se botar REF não tem como colocar como chave primária
     apelido      VARCHAR2(30),
     tipo         VARCHAR2(50),
-    data_criacao DATE
+    data_criacao DATE,
+    generos_favoritos generos_favoritos_ntt
 ) NOT FINAL NOT INSTANTIABLE;
 /
 
@@ -79,7 +90,13 @@ CREATE OR REPLACE TYPE avaliacao_t AS OBJECT (
     id_avaliacao NUMBER,
     qualidade    NUMBER,
     data_hora    TIMESTAMP,
-    FINAL MEMBER FUNCTION status_avaliacao RETURN VARCHAR2
+    FINAL MEMBER FUNCTION status_avaliacao RETURN VARCHAR2,
+    MAP MEMBER FUNCTION ordenar RETURN TIMESTAMP,
+    CONSTRUCTOR FUNCTION avaliacao_t (
+        id_avaliacao NUMBER,
+        qualidade NUMBER,
+        data_hora TIMESTAMP DEFAULT SYSTIMESTAMP
+	) RETURN SELF AS RESULT
 ) FINAL;
 /
 
@@ -87,6 +104,22 @@ CREATE OR REPLACE TYPE BODY avaliacao_t AS
     MEMBER FUNCTION status_avaliacao RETURN VARCHAR2 IS
     BEGIN
        RETURN 'Qualidade: ' || TO_CHAR(qualidade);
+    END;
+	MAP MEMBER FUNCTION ordenar RETURN TIMESTAMP IS
+    BEGIN
+        RETURN data_hora;
+    END;
+	CONSTRUCTOR FUNCTION avaliacao_t (
+        id_avaliacao NUMBER,
+        qualidade NUMBER,
+        data_hora TIMESTAMP DEFAULT SYSTIMESTAMP
+    ) RETURN SELF AS RESULT IS
+    BEGIN
+        SELF.id_avaliacao := id_avaliacao;
+        SELF.qualidade := qualidade;
+        SELF.data_hora := data_hora;
+        
+        RETURN SELF;
     END;
 END;
 /
@@ -145,6 +178,7 @@ END;
 ---------------------------------------------------------------------
 -- 8. Tipo Serie 
 ---------------------------------------------------------------------
+
 CREATE OR REPLACE TYPE serie_t AS OBJECT (
     id_serie         NUMBER,
     numero_episodios NUMBER,
@@ -169,6 +203,7 @@ CREATE OR REPLACE TYPE episodio_t UNDER conteudo_t (
     serie_pertencente REF serie_t,
     FINAL MEMBER FUNCTION info RETURN VARCHAR2
 ) FINAL;
+
 /
 
 CREATE OR REPLACE TYPE BODY episodio_t AS 
@@ -212,16 +247,68 @@ CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
     data_hora           TIMESTAMP,
     dispositivo_utilizado VARCHAR2(100),
     progresso_percentual NUMBER,
-    avaliacao           REF avaliacao_t,
-    FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2
-) FINAL;
+    avaliacao            REF avaliacao_t,
+    FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2,
+    MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER),
+    MEMBER FUNCTION resumo RETURN VARCHAR2,
+    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER
+);
 /
-
+ALTER TYPE perfil_consome_conteudo_t FINAL;
+    
 CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
     MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
     BEGIN
        RETURN 'Consumo registrado em ' || TO_CHAR(data_hora, 'DD/MM/YYYY HH24:MI');
     END;
+	MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
+    BEGIN
+        IF novo_progresso < 0 OR novo_progresso > 100 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Progresso deve estar entre 0 e 100.');
+        END IF;
+        self.progresso_percentual := novo_progresso;
+    END;
+	ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER IS
+    DECLARE
+        qualidade_self NUMBER;
+        qualidade_outro NUMBER;
+    BEGIN
+        IF self.progresso_percentual > outro.progresso_percentual THEN
+            RETURN 1;
+        ELSIF self.progresso_percentual < outro.progresso_percentual THEN
+            RETURN -1;
+        END IF;
+
+        IF self.avaliacao IS NOT NULL THEN
+            SELECT qualidade INTO qualidade_self FROM avaliacao_obj_tab WHERE REF(qualidade_self) = self.avaliacao;
+        ELSE
+            qualidade_self := 0; -- se não tiver avaliação, consideramos qualidade 0
+        END IF;
+
+        IF outro.avaliacao IS NOT NULL THEN
+            SELECT qualidade INTO qualidade_outro FROM avaliacao_obj_tab WHERE REF(qualidade_outro) = outro.avaliacao;
+        ELSE
+            qualidade_outro := 0;
+        END IF;
+
+        IF qualidade_self > qualidade_outro THEN
+            RETURN 1;
+        ELSIF qualidade_self < qualidade_outro THEN
+            RETURN -1;
+		ELSE
+            RETURN 0;
+        END IF;
+
+    END;
+
+	MEMBER FUNCTION resumo RETURN VARCHAR2 IS
+    BEGIN
+        RETURN 'Perfil ' || VALUE(self).id_perfil || 
+               ' consumiu conteúdo ' || VALUE(self).id_conteudo || 
+               ' em ' || TO_CHAR(VALUE(self).data_hora, 'DD/MM/YYYY HH24:MI');
+    END resumo;
+END;
+	
 END;
 /
 
@@ -239,14 +326,13 @@ CREATE TABLE conta_obj_tab OF conta_t (
     senha NOT NULL
 );
 
-
 CREATE TABLE perfil_obj_tab OF perfil_t (
     PRIMARY KEY (id_perfil, conta_email), -- com REF conta não vai
     FOREIGN KEY (conta_email) REFERENCES conta_obj_tab(email),
     tipo NOT NULL,
     data_criacao NOT NULL,
     CONSTRAINT tipos_possiveis CHECK (tipo IN ('Infantil', 'Livre'))
-);
+) NESTED TABLE generos_favoritos STORE AS generos_favoritos_tab;
 
 
 CREATE TABLE avaliacao_obj_tab OF avaliacao_t (
@@ -269,7 +355,7 @@ CREATE TABLE filme_obj_tab OF filme_t (
     data_lancamento NOT NULL
 );
 
-CREATE TABLE serie_obj_tab OF serie_t (
+CREATE TABLE serie_obj_tab OF serie_t(
     PRIMARY KEY (id_serie),
     numero_episodios NOT NULL,
     nome NOT NULL
@@ -278,7 +364,7 @@ CREATE TABLE serie_obj_tab OF serie_t (
 CREATE TABLE episodio_obj_tab OF episodio_t (
     PRIMARY KEY (id_conteudo),
     temporada NOT NULL,
-    serie_pertencente NOT NULL
+    serie_pertencente SCOPE IS serie_obj_tab
 );
 
 CREATE TABLE plano_permite_conteudo_obj_tab OF plano_permite_conteudo_t (
@@ -292,5 +378,6 @@ CREATE TABLE plano_permite_conteudo_obj_tab OF plano_permite_conteudo_t (
 CREATE TABLE perfil_consome_conteudo_obj_tab OF perfil_consome_conteudo_t (
     PRIMARY KEY (id_conteudo, id_perfil, email, data_hora),
     FOREIGN KEY (id_conteudo) REFERENCES conteudo_obj_tab(id_conteudo),
-    FOREIGN KEY (id_perfil, email) REFERENCES perfil_obj_tab(id_perfil, conta_email)
+    FOREIGN KEY (id_perfil, email) REFERENCES perfil_obj_tab(id_perfil, conta_email),
+    avaliacao WITH ROWID REFERENCES avaliacao_obj_tab
 );
