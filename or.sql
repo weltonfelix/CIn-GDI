@@ -8,7 +8,6 @@ CREATE OR REPLACE TYPE plano_t AS OBJECT (
     tempo_fidelidade_meses NUMBER,
     FINAL MEMBER FUNCTION exibir_detalhes RETURN VARCHAR2
 ) FINAL;
-/
 
 CREATE OR REPLACE TYPE BODY plano_t AS 
     MEMBER FUNCTION exibir_detalhes RETURN VARCHAR2 IS
@@ -16,7 +15,6 @@ CREATE OR REPLACE TYPE BODY plano_t AS
       RETURN 'Plano ' || nome || ' com preço ' || TO_CHAR(preco);
     END;
 END;
-/
 
 ---------------------------------------------------------------------
 -- 2. Tipo Telefone (usado no VARRAY)
@@ -24,11 +22,9 @@ END;
 CREATE OR REPLACE TYPE telefone_t AS OBJECT (
     telefone VARCHAR2(15)
 ) FINAL;
-/
 
 -- VARRAY para armazenar múltiplos telefones (máximo 10)
 CREATE OR REPLACE TYPE telefone_varray AS VARRAY(10) OF telefone_t;
-/
 
 ---------------------------------------------------------------------
 -- 3. Tipo Conta (com atributo multivalorado para telefones)
@@ -41,7 +37,6 @@ CREATE OR REPLACE TYPE conta_t AS OBJECT (
     telefones     telefone_varray,  -- atributo multivalorado
     FINAL MEMBER FUNCTION exibir_nome RETURN VARCHAR2
 ) NOT FINAL;  -- Permite herança se necessário
-/
 
 CREATE OR REPLACE TYPE BODY conta_t AS 
     MEMBER FUNCTION exibir_nome RETURN VARCHAR2 IS
@@ -49,7 +44,6 @@ CREATE OR REPLACE TYPE BODY conta_t AS
       RETURN primeiro_nome || ' ' || sobrenome;
     END;
 END;
-/
 
 ---------------------------------------------------------------------
 -- 4. Tipo Perfil (não instanciável, pois será usado como superclasse)
@@ -58,11 +52,10 @@ CREATE OR REPLACE TYPE genero_favorito_t AS OBJECT (
 	nome_genero VARCHAR2(50)
 ) FINAL;
 CREATE OR REPLACE TYPE generos_favoritos_ntt AS TABLE OF genero_favorito_t;
-/
 
 
 
-/
+
 
 CREATE OR REPLACE TYPE perfil_t AS OBJECT (
     id_perfil    NUMBER,
@@ -72,7 +65,7 @@ CREATE OR REPLACE TYPE perfil_t AS OBJECT (
     data_criacao DATE,
     generos_favoritos generos_favoritos_ntt
 ) NOT FINAL NOT INSTANTIABLE;
-/
+
 
 CREATE OR REPLACE TYPE BODY perfil_t AS 
     MEMBER FUNCTION get_info RETURN VARCHAR2 IS
@@ -80,7 +73,7 @@ CREATE OR REPLACE TYPE BODY perfil_t AS
        RETURN 'Perfil: ' || apelido || ' (' || tipo || ')';
     END;
 END;
-/
+
 
 
 ---------------------------------------------------------------------
@@ -98,7 +91,7 @@ CREATE OR REPLACE TYPE avaliacao_t AS OBJECT (
         data_hora TIMESTAMP DEFAULT SYSTIMESTAMP
 	) RETURN SELF AS RESULT
 ) FINAL;
-/
+
 
 CREATE OR REPLACE TYPE BODY avaliacao_t AS 
     MEMBER FUNCTION status_avaliacao RETURN VARCHAR2 IS
@@ -122,7 +115,7 @@ CREATE OR REPLACE TYPE BODY avaliacao_t AS
         RETURN SELF;
     END;
 END;
-/
+
 
 ---------------------------------------------------------------------
 -- 6. Tipo Conteudo (base para Filme e outros; NOT FINAL para permitir herança)
@@ -138,7 +131,7 @@ CREATE OR REPLACE TYPE conteudo_t AS OBJECT (
     sucessor        REF conteudo_t,
     MEMBER FUNCTION descricao RETURN VARCHAR2
 ) NOT FINAL;
-/
+
 
 CREATE OR REPLACE TYPE BODY conteudo_t AS 
     MEMBER FUNCTION descricao RETURN VARCHAR2 IS
@@ -146,7 +139,7 @@ CREATE OR REPLACE TYPE BODY conteudo_t AS
        RETURN nome || ' (' || TO_CHAR(data_lancamento, 'YYYY') || ')';
     END;
 END;
-/
+
 
 ---------------------------------------------------------------------
 -- 7. Tipo Filme (herda de conteudo_t; NOT FINAL se houver possibilidade de herdar de Filme)
@@ -155,7 +148,7 @@ CREATE OR REPLACE TYPE filme_t UNDER conteudo_t (
     nome_sequencia VARCHAR2(255),
     OVERRIDING MEMBER FUNCTION descricao RETURN VARCHAR2
 ) NOT FINAL;
-/
+
 
 CREATE OR REPLACE TYPE BODY filme_t AS 
     MEMBER FUNCTION descricao RETURN VARCHAR2 IS
@@ -173,7 +166,7 @@ CREATE OR REPLACE TYPE BODY filme_t AS
     END;
 END;
 
-/
+
 
 ---------------------------------------------------------------------
 -- 8. Tipo Serie 
@@ -185,7 +178,7 @@ CREATE OR REPLACE TYPE serie_t AS OBJECT (
     nome             VARCHAR2(255),
     FINAL MEMBER FUNCTION resumo RETURN VARCHAR2
 ) FINAL;
-/
+
 
 CREATE OR REPLACE TYPE BODY serie_t AS 
     MEMBER FUNCTION resumo RETURN VARCHAR2 IS
@@ -193,7 +186,7 @@ CREATE OR REPLACE TYPE BODY serie_t AS
        RETURN 'Série ' || nome || ' com ' || TO_CHAR(numero_episodios) || ' episódios';
     END;
 END;
-/
+
 
 ---------------------------------------------------------------------
 -- 9. Tipo Episodio 
@@ -204,7 +197,7 @@ CREATE OR REPLACE TYPE episodio_t UNDER conteudo_t (
     FINAL MEMBER FUNCTION info RETURN VARCHAR2
 ) FINAL;
 
-/
+
 
 CREATE OR REPLACE TYPE BODY episodio_t AS 
     MEMBER FUNCTION info RETURN VARCHAR2 IS
@@ -212,7 +205,7 @@ CREATE OR REPLACE TYPE BODY episodio_t AS
        RETURN 'Temporada ' || TO_CHAR(temporada) || ', parte da série ' || TO_CHAR(serie_pertencente);
     END;
 END;
-/
+
 
 ---------------------------------------------------------------------
 -- 10. Tipo PlanoPermiteConteudo
@@ -226,16 +219,16 @@ CREATE OR REPLACE TYPE plano_permite_conteudo_t AS OBJECT (
     desconto_aplicado NUMBER(5,2),
     FINAL MEMBER FUNCTION periodo RETURN VARCHAR2
 ) FINAL;
-/
+
 
 CREATE OR REPLACE TYPE BODY plano_permite_conteudo_t AS 
     MEMBER FUNCTION periodo RETURN VARCHAR2 IS
     BEGIN
-       RETURN 'De ' || TO_CHAR(data_inicio, 'DD/MM/YYYY') || ' até ' ||
-              CASE WHEN data_fim IS NOT NULL THEN TO_CHAR(data_fim, 'DD/MM/YYYY') ELSE 'indeterminado' END;
+       RETURN 'De ' || TO_CHAR(data_inicio, 'DDMMYYYY') || ' até ' ||
+              CASE WHEN data_fim IS NOT NULL THEN TO_CHAR(data_fim, 'DDMMYYYY') ELSE 'indeterminado' END;
     END;
 END;
-/
+
 
 ---------------------------------------------------------------------
 -- 11. Tipo PerfilConsomeConteudo
@@ -253,13 +246,13 @@ CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
     MEMBER FUNCTION resumo RETURN VARCHAR2,
     ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER
 );
-/
+
 ALTER TYPE perfil_consome_conteudo_t FINAL;
     
 CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
     MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
     BEGIN
-       RETURN 'Consumo registrado em ' || TO_CHAR(data_hora, 'DD/MM/YYYY HH24:MI');
+       RETURN 'Consumo registrado em ' || TO_CHAR(data_hora, 'DDMMYYYY HH24:MI');
     END;
 	MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
     BEGIN
@@ -305,12 +298,12 @@ CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS
     BEGIN
         RETURN 'Perfil ' || VALUE(self).id_perfil || 
                ' consumiu conteúdo ' || VALUE(self).id_conteudo || 
-               ' em ' || TO_CHAR(VALUE(self).data_hora, 'DD/MM/YYYY HH24:MI');
+               ' em ' || TO_CHAR(VALUE(self).data_hora, 'DDMMYYYY HH24:MI');
     END resumo;
 END;
 	
 END;
-/
+
 
 CREATE TABLE plano_obj_tab OF plano_t (
     PRIMARY KEY (id_plano),
