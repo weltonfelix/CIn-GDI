@@ -833,43 +833,43 @@ BEGIN
 
   -- Inserir sucessores dos episodios
 
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 65) WHERE f.id_conteudo = 66;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 64) WHERE f.id_conteudo = 65;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 63) WHERE f.id_conteudo = 64;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 62) WHERE f.id_conteudo = 63;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 61) WHERE f.id_conteudo = 62;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 60) WHERE f.id_conteudo = 61;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 59) WHERE f.id_conteudo = 60;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 58) WHERE f.id_conteudo = 59;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 57) WHERE f.id_conteudo = 58;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 66) WHERE f.id_conteudo = 65;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 65) WHERE f.id_conteudo = 64;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 64) WHERE f.id_conteudo = 63;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 63) WHERE f.id_conteudo = 62;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 62) WHERE f.id_conteudo = 61;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 61) WHERE f.id_conteudo = 60;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 60) WHERE f.id_conteudo = 59;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 59) WHERE f.id_conteudo = 58;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 58) WHERE f.id_conteudo = 57;
   
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 55) WHERE f.id_conteudo = 56;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 54) WHERE f.id_conteudo = 55;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 53) WHERE f.id_conteudo = 54;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 52) WHERE f.id_conteudo = 53;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 51) WHERE f.id_conteudo = 52;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 50) WHERE f.id_conteudo = 51;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 49) WHERE f.id_conteudo = 50;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 48) WHERE f.id_conteudo = 49;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 47) WHERE f.id_conteudo = 48;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 56) WHERE f.id_conteudo = 55;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 55) WHERE f.id_conteudo = 54;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 54) WHERE f.id_conteudo = 53;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 53) WHERE f.id_conteudo = 52;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 52) WHERE f.id_conteudo = 51;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 51) WHERE f.id_conteudo = 50;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 50) WHERE f.id_conteudo = 49;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 49) WHERE f.id_conteudo = 48;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 48) WHERE f.id_conteudo = 47;
   
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 45) WHERE f.id_conteudo = 46;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 44) WHERE f.id_conteudo = 45;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 43) WHERE f.id_conteudo = 44;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 42) WHERE f.id_conteudo = 43;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 41) WHERE f.id_conteudo = 42;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 40) WHERE f.id_conteudo = 41;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 39) WHERE f.id_conteudo = 40;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 46) WHERE f.id_conteudo = 45;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 45) WHERE f.id_conteudo = 44;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 44) WHERE f.id_conteudo = 43;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 43) WHERE f.id_conteudo = 42;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 42) WHERE f.id_conteudo = 41;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 41) WHERE f.id_conteudo = 40;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 40) WHERE f.id_conteudo = 39;
   
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 37) WHERE f.id_conteudo = 38;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 36) WHERE f.id_conteudo = 37;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 35) WHERE f.id_conteudo = 36;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 34) WHERE f.id_conteudo = 35;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 33) WHERE f.id_conteudo = 34;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 32) WHERE f.id_conteudo = 33;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 31) WHERE f.id_conteudo = 32;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 30) WHERE f.id_conteudo = 31;
-  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 29) WHERE f.id_conteudo = 30;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 38) WHERE f.id_conteudo = 37;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 37) WHERE f.id_conteudo = 36;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 36) WHERE f.id_conteudo = 35;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 35) WHERE f.id_conteudo = 34;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 34) WHERE f.id_conteudo = 33;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 33) WHERE f.id_conteudo = 32;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 32) WHERE f.id_conteudo = 31;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 31) WHERE f.id_conteudo = 30;
+  UPDATE episodio_obj_tab f SET f.sucessor = (SELECT REF(f2) FROM episodio_obj_tab f2 WHERE f2.id_conteudo = 30) WHERE f.id_conteudo = 29;
 
 
   UPDATE episodio_obj_tab f SET f.serie_pertencente = (SELECT REF(s) FROM serie_obj_tab s WHERE s.id_serie = 4) WHERE f.id_conteudo = 66;
