@@ -11,7 +11,7 @@ CREATE OR REPLACE TYPE plano_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE BODY plano_t AS 
-    MEMBER FUNCTION exibir_detalhes RETURN VARCHAR2 IS
+    FINAL MEMBER FUNCTION exibir_detalhes RETURN VARCHAR2 IS
     BEGIN
       RETURN 'Plano ' || nome || ' com preço ' || TO_CHAR(preco);
     END;
@@ -44,7 +44,7 @@ CREATE OR REPLACE TYPE conta_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE BODY conta_t AS 
-    MEMBER FUNCTION exibir_nome RETURN VARCHAR2 IS
+    FINAL MEMBER FUNCTION exibir_nome RETURN VARCHAR2 IS
     BEGIN
       RETURN primeiro_nome || ' ' || sobrenome;
     END;
@@ -70,7 +70,8 @@ CREATE OR REPLACE TYPE perfil_t AS OBJECT (
     apelido      VARCHAR2(30),
     tipo         VARCHAR2(50),
     data_criacao DATE,
-    generos_favoritos generos_favoritos_ntt
+    generos_favoritos generos_favoritos_ntt,
+    MEMBER FUNCTION get_info RETURN VARCHAR2
 ) NOT FINAL;
 /
 
@@ -90,7 +91,7 @@ CREATE OR REPLACE TYPE avaliacao_t AS OBJECT (
     id_avaliacao NUMBER,
     qualidade    NUMBER,
     data_hora    TIMESTAMP,
-    FINAL MEMBER FUNCTION status_avaliacao RETURN VARCHAR2,
+    MEMBER FUNCTION status_avaliacao RETURN VARCHAR2,
     MAP MEMBER FUNCTION ordenar RETURN TIMESTAMP,
     CONSTRUCTOR FUNCTION avaliacao_t (
         id_avaliacao NUMBER,
@@ -119,7 +120,7 @@ CREATE OR REPLACE TYPE BODY avaliacao_t AS
         SELF.qualidade := qualidade;
         SELF.data_hora := data_hora;
         
-        RETURN SELF;
+        RETURN;
     END;
 END;
 /
@@ -158,7 +159,7 @@ CREATE OR REPLACE TYPE filme_t UNDER conteudo_t (
 /
 
 CREATE OR REPLACE TYPE BODY filme_t AS 
-    MEMBER FUNCTION descricao RETURN VARCHAR2 IS
+    OVERRIDING MEMBER FUNCTION descricao RETURN VARCHAR2 IS
     BEGIN
         IF nome_sequencia IS NOT NULL THEN
             RETURN 'Filme: ' || nome || 
@@ -188,7 +189,7 @@ CREATE OR REPLACE TYPE serie_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE BODY serie_t AS 
-    MEMBER FUNCTION resumo RETURN VARCHAR2 IS
+    FINAL MEMBER FUNCTION resumo RETURN VARCHAR2 IS
     BEGIN
        RETURN 'Série ' || nome || ' com ' || TO_CHAR(numero_episodios) || ' episódios';
     END;
@@ -207,11 +208,14 @@ CREATE OR REPLACE TYPE episodio_t UNDER conteudo_t (
 /
 
 CREATE OR REPLACE TYPE BODY episodio_t AS 
-    MEMBER FUNCTION info RETURN VARCHAR2 IS
+    FINAL MEMBER FUNCTION info RETURN VARCHAR2 IS
+    v_serie serie_t;
     BEGIN
-       RETURN 'Temporada ' || TO_CHAR(temporada) || ', parte da série ' || TO_CHAR(serie_pertencente);
-    END;
+        SELECT DEREF(serie_pertencente) INTO v_serie FROM DUAL;
+        RETURN 'Temporada ' || TO_CHAR(temporada) || ', parte da série ' || v_serie.nome;
+    END info;
 END;
+/
 /
 
 ---------------------------------------------------------------------
@@ -229,7 +233,7 @@ CREATE OR REPLACE TYPE plano_permite_conteudo_t AS OBJECT (
 /
 
 CREATE OR REPLACE TYPE BODY plano_permite_conteudo_t AS 
-    MEMBER FUNCTION periodo RETURN VARCHAR2 IS
+    FINAL MEMBER FUNCTION periodo RETURN VARCHAR2 IS
     BEGIN
        RETURN 'De ' || TO_CHAR(data_inicio, 'DD/MM/YYYY') || ' até ' ||
               CASE WHEN data_fim IS NOT NULL THEN TO_CHAR(data_fim, 'DD/MM/YYYY') ELSE 'indeterminado' END;
@@ -250,66 +254,68 @@ CREATE OR REPLACE TYPE perfil_consome_conteudo_t AS OBJECT (
     avaliacao            REF avaliacao_t,
     FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2,
     MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER),
-    MEMBER FUNCTION resumo RETURN VARCHAR2,
     ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER
 );
+
 /
 ALTER TYPE perfil_consome_conteudo_t FINAL;
     
 CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
-    MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
+    FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
     BEGIN
-       RETURN 'Consumo registrado em ' || TO_CHAR(data_hora, 'DD/MM/YYYY HH24:MI');
+       RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
     END;
-	MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
+
+    MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
     BEGIN
         IF novo_progresso < 0 OR novo_progresso > 100 THEN
             RAISE_APPLICATION_ERROR(-20001, 'Progresso deve estar entre 0 e 100.');
         END IF;
         self.progresso_percentual := novo_progresso;
     END;
-	ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER IS
-    DECLARE
+
+    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER IS
         qualidade_self NUMBER;
         qualidade_outro NUMBER;
     BEGIN
+        -- Primeiro, compara o progresso percentual
         IF self.progresso_percentual > outro.progresso_percentual THEN
             RETURN 1;
         ELSIF self.progresso_percentual < outro.progresso_percentual THEN
             RETURN -1;
         END IF;
 
+        -- Comparação de qualidade da avaliação
         IF self.avaliacao IS NOT NULL THEN
-            SELECT qualidade INTO qualidade_self FROM avaliacao_obj_tab WHERE REF(qualidade_self) = self.avaliacao;
+            SELECT qualidade INTO qualidade_self 
+            FROM avaliacao_obj_tab 
+            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO: Referência desreferenciada corretamente
         ELSE
-            qualidade_self := 0; -- se não tiver avaliação, consideramos qualidade 0
+            qualidade_self := 0; -- Se não tiver avaliação, assume 0
         END IF;
 
         IF outro.avaliacao IS NOT NULL THEN
-            SELECT qualidade INTO qualidade_outro FROM avaliacao_obj_tab WHERE REF(qualidade_outro) = outro.avaliacao;
+            SELECT qualidade INTO qualidade_outro 
+            FROM avaliacao_obj_tab 
+            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO
         ELSE
             qualidade_outro := 0;
         END IF;
 
+        -- Comparação final
         IF qualidade_self > qualidade_outro THEN
             RETURN 1;
         ELSIF qualidade_self < qualidade_outro THEN
             RETURN -1;
-		ELSE
+        ELSE
             RETURN 0;
         END IF;
-
     END;
 
-	MEMBER FUNCTION resumo RETURN VARCHAR2 IS
-    BEGIN
-        RETURN 'Perfil ' || VALUE(self).id_perfil || 
-               ' consumiu conteúdo ' || VALUE(self).id_conteudo || 
-               ' em ' || TO_CHAR(VALUE(self).data_hora, 'DD/MM/YYYY HH24:MI');
-    END resumo;
 END;
-	
-END;
+
+
+
 /
 
 CREATE TABLE plano_obj_tab OF plano_t (
@@ -381,6 +387,73 @@ CREATE TABLE perfil_consome_conteudo_obj_tab OF perfil_consome_conteudo_t (
     FOREIGN KEY (id_perfil, email) REFERENCES perfil_obj_tab(id_perfil, conta_email),
     avaliacao WITH ROWID REFERENCES avaliacao_obj_tab
 );
+ALTER TYPE perfil_consome_conteudo_t ADD MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) CASCADE;
+CREATE OR REPLACE TYPE BODY perfil_consome_conteudo_t AS 
+    FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
+    BEGIN
+       RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
+    END;
+
+    MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
+    BEGIN
+        IF novo_progresso < 0 OR novo_progresso > 100 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Progresso deve estar entre 0 e 100.');
+        END IF;
+        self.progresso_percentual := novo_progresso;
+    END;
+
+    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_conteudo_t) RETURN INTEGER IS
+        qualidade_self NUMBER;
+        qualidade_outro NUMBER;
+    BEGIN
+        -- Primeiro, compara o progresso percentual
+        IF self.progresso_percentual > outro.progresso_percentual THEN
+            RETURN 1;
+        ELSIF self.progresso_percentual < outro.progresso_percentual THEN
+            RETURN -1;
+        END IF;
+
+        -- Comparação de qualidade da avaliação
+        IF self.avaliacao IS NOT NULL THEN
+            SELECT qualidade INTO qualidade_self 
+            FROM avaliacao_obj_tab 
+            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO: Referência desreferenciada corretamente
+        ELSE
+            qualidade_self := 0; -- Se não tiver avaliação, assume 0
+        END IF;
+
+        IF outro.avaliacao IS NOT NULL THEN
+            SELECT qualidade INTO qualidade_outro 
+            FROM avaliacao_obj_tab 
+            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao;  -- 🔹 CORRIGIDO
+        ELSE
+            qualidade_outro := 0;
+        END IF;
+
+        -- Comparação final
+        IF qualidade_self > qualidade_outro THEN
+            RETURN 1;
+        ELSIF qualidade_self < qualidade_outro THEN
+            RETURN -1;
+        ELSE
+            RETURN 0;
+        END IF;
+    END;
+    MEMBER PROCEDURE imprimir_consumo(id_perfil NUMBER, id_conteudo NUMBER) IS
+        v_consumo perfil_consome_conteudo_t;
+    BEGIN
+        -- Obtém o objeto da tabela usando VALUE
+        SELECT VALUE(p) INTO v_consumo 
+        FROM perfil_consome_conteudo_obj_tab p
+        WHERE p.id_perfil = id_perfil AND p.id_conteudo = id_conteudo;
+
+        -- Exibe informações do consumo
+        DBMS_OUTPUT.PUT_LINE('Perfil: ' || v_consumo.id_perfil || 
+                             ', Conteúdo: ' || v_consumo.id_conteudo || 
+                             ', Progresso: ' || v_consumo.progresso_percentual || '%');
+    END;
+
+END;
 
 INSERT INTO plano_obj_tab VALUES (plano_t(1, 'Básico', 10.00, 6));
 INSERT INTO plano_obj_tab VALUES (plano_t(2, 'Premium', 15.00, 3));
