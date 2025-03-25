@@ -258,57 +258,7 @@ CREATE OR REPLACE TYPE perfil_consome_filme_t AS OBJECT (
     MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER),
     ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER
 ) FINAL;
-    
-CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS 
-    FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
-    BEGIN
-       RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
-    END;
 
-    MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
-    BEGIN
-        IF novo_progresso < 0 OR novo_progresso > 100 THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Progresso deve estar entre 0 e 100.');
-        END IF;
-        self.progresso_percentual := novo_progresso;
-    END;
-
-    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER IS
-        qualidade_self NUMBER;
-        qualidade_outro NUMBER;
-    BEGIN
-        IF self.progresso_percentual > outro.progresso_percentual THEN
-            RETURN 1;
-        ELSIF self.progresso_percentual < outro.progresso_percentual THEN
-            RETURN -1;
-        END IF;
-
-        IF self.avaliacao IS NOT NULL THEN
-            SELECT qualidade INTO qualidade_self 
-            FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  
-        ELSE
-            qualidade_self := 0; 
-        END IF;
-
-        IF outro.avaliacao IS NOT NULL THEN
-            SELECT qualidade INTO qualidade_outro 
-            FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao; 
-        ELSE
-            qualidade_outro := 0;
-        END IF;
-
-        IF qualidade_self > qualidade_outro THEN
-            RETURN 1;
-        ELSIF qualidade_self < qualidade_outro THEN
-            RETURN -1;
-        ELSE
-            RETURN 0;
-        END IF;
-    END;
-
-END;
 
 CREATE OR REPLACE TYPE perfil_consome_episodio_t AS OBJECT (
     id_episodio            NUMBER, -- com REF não pode ser chave primária
@@ -789,6 +739,7 @@ INSERT INTO serie_obj_tab VALUES (serie_t(1, 10, 'Breaking Bad'));
 INSERT INTO serie_obj_tab VALUES (serie_t(2, 8, 'Avatar'));
 INSERT INTO serie_obj_tab VALUES (serie_t(3, 10, 'Better Call Saul'));
 INSERT INTO serie_obj_tab VALUES (serie_t(4, 10, 'Dark'));
+
 
 -- Episódios
 
@@ -1285,6 +1236,7 @@ INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 1, 'lu
 INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
 
 INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
 
 INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
 
@@ -1950,4 +1902,54 @@ GROUP BY
     p.email, p.id_plano
 ORDER BY 
     total_filmes DESC, p.email;
+
+
+SELECT 
+    p.id_episodio AS "ID Episódio",
+    p.id_plano AS "ID Plano",
+    p.email AS "Email",
+    p.periodo() AS "Período de Acesso",
+    NVL2(p.desconto_aplicado, TO_CHAR(p.desconto_aplicado, '999.99') || '%', 'Sem desconto') AS "Desconto Aplicado"
+FROM plano_permite_episodio_obj_tab p
+ORDER BY p.data_inicio DESC;
+
+
+SELECT 
+    p.id_filme AS "ID do Filme",
+    p.id_perfil AS "ID do Perfil",
+    p.email AS "Email",
+    p.consumo_info() AS "Data do Consumo",
+    p.dispositivo_utilizado AS "Dispositivo",
+    TO_CHAR(p.progresso_percentual, '990.00') || '%' AS "Progresso",
+    CASE 
+        WHEN p.progresso_percentual = 100 THEN 'Finalizado'
+        WHEN p.progresso_percentual >= 75 THEN 'Quase no fim'
+        WHEN p.progresso_percentual >= 50 THEN 'Metade'
+        WHEN p.progresso_percentual >= 25 THEN 'Começando'
+        ELSE 'Início'
+    END AS "Status de Consumo"
+FROM perfil_consome_filme_obj_tab p
+ORDER BY p.progresso_percentual DESC, p.data_hora DESC;
+
+
+SELECT 
+    p.id_episodio AS "ID do Episódio",
+    p.id_perfil AS "ID do Perfil",
+    p.email AS "Email",
+    TO_CHAR(p.data_hora, 'DD/MM/YYYY HH24:MI') AS "Data de Consumo",
+    p.dispositivo_utilizado AS "Dispositivo",
+    TO_CHAR(p.progresso_percentual, '990.00') || '%' AS "Progresso",
+    CASE 
+        WHEN p.progresso_percentual = 100 THEN 'Finalizado'
+        WHEN p.progresso_percentual >= 75 THEN 'Quase no fim'
+        WHEN p.progresso_percentual >= 50 THEN 'Metade'
+        WHEN p.progresso_percentual >= 25 THEN 'Começando'
+        ELSE 'Início'
+    END AS "Status de Consumo",
+    (SELECT a.qualidade 
+     FROM avaliacao_obj_tab a 
+     WHERE a.id_avaliacao = DEREF(p.avaliacao).id_avaliacao) AS "Qualidade da Avaliação"
+FROM perfil_consome_episodio_obj_tab p
+ORDER BY p.progresso_percentual DESC, p.data_hora DESC;
+
 
