@@ -1807,3 +1807,47 @@ BEGIN
 
     COMMIT;
 END;
+
+
+-- Criando instâncias de objetos para teste
+DECLARE
+    v_plano plano_t := plano_t(1, 'Básico', 29.99, 12);
+    v_conta conta_t := conta_t('email@example.com', 'João', 'Silva', 'senha123', telefone_varray(telefone_t('999999999')));
+    v_avaliacao avaliacao_t := avaliacao_t(5, 3, SYSDATE);
+    v_filme filme_t := filme_t(7, 'Jurassic Park', TO_DATE('11-06-1993', 'DD-MM-YYYY'), 'Aventura', 127, 'Michael Crichton', 'Universal Pictures', NULL, NULL);
+    v_serie serie_t := serie_t(1, 10, 'Breaking Bad');
+    v_episodio episodio_t := episodio_t(66, 'Dark - S01E10 - Alfa e Ômega', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 55, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
+	v_consumo perfil_consome_filme_t := perfil_consome_filme_t(1, 1, 'jose.silva@email.com', TO_TIMESTAMP('01/02/2025 14:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 75, NULL);
+BEGIN
+    -- Testando funções
+    DBMS_OUTPUT.PUT_LINE('Detalhes do Plano: ' || v_plano.exibir_detalhes());
+    DBMS_OUTPUT.PUT_LINE('Nome do Usuário: ' || v_conta.exibir_nome());
+    DBMS_OUTPUT.PUT_LINE('Status da Avaliação: ' || v_avaliacao.status_avaliacao());
+    DBMS_OUTPUT.PUT_LINE('Descrição do Filme: ' || v_filme.descricao());
+    DBMS_OUTPUT.PUT_LINE('Descrição da Série: ' || v_serie.resumo());
+    DBMS_OUTPUT.PUT_LINE('Descrição do Episódio: ' || v_episodio.descricao()); -- vindo de conteúdo
+	DBMS_OUTPUT.PUT_LINE('Informações do Episódio: ' || v_episodio.info());
+    DBMS_OUTPUT.PUT_LINE('Consumo Info: ' || v_consumo.consumo_info());
+END;
+/
+
+DECLARE
+    v_perfil perfil_t := perfil_t(1, 'jose.silva@email.com', 'Zé', 'Livre', TO_DATE('05-02-2025', 'DD-MM-YYYY'),generos_favoritos_ntt(genero_favorito_t('Ação'), genero_favorito_t('Aventura')));
+    v_plano_filme plano_permite_filme_t := plano_permite_filme_t(1, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL);
+    v_plano_episodio plano_permite_episodio_t := plano_permite_episodio_t(29, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL);
+    v_consumo1 perfil_consome_filme_t := perfil_consome_filme_t(1, 1, 'jose.silva@email.com', TO_TIMESTAMP('01/02/2025 14:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 75, NULL);
+    v_consumo2 perfil_consome_filme_t := perfil_consome_filme_t(7, 7, 'pedro.oliveira@email.com', TO_TIMESTAMP('07/02/2025 09:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 90, NULL);
+    v_comparacao INTEGER;
+BEGIN
+    -- Testando funções
+    DBMS_OUTPUT.PUT_LINE('Informações do Perfil: ' || v_perfil.get_info());
+    DBMS_OUTPUT.PUT_LINE('Período do Plano para Filmes: ' || v_plano_filme.periodo());
+    DBMS_OUTPUT.PUT_LINE('Período do Plano para Episódios: ' || v_plano_episodio.periodo());
+    
+    -- Testando procedimentos
+    v_consumo1.atualizar_progresso(75);
+    v_consumo2.atualizar_progresso(50);
+    
+    v_comparacao := v_consumo1.comparar_consumo(v_consumo2);
+    DBMS_OUTPUT.PUT_LINE('Comparação de consumo: ' || v_comparacao);
+END;
