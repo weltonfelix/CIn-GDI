@@ -1851,3 +1851,103 @@ BEGIN
     v_comparacao := v_consumo1.comparar_consumo(v_consumo2);
     DBMS_OUTPUT.PUT_LINE('Comparação de consumo: ' || v_comparacao);
 END;
+
+SELECT id_plano, nome, preco, tempo_fidelidade_meses, 
+       CASE 
+           WHEN tempo_fidelidade_meses > 0 THEN 'Possui Fidelidade'
+           ELSE 'Sem Fidelidade'
+       END AS status_fidelidade
+FROM plano_obj_tab
+ORDER BY preco DESC;
+
+SELECT 
+    c.email, 
+    c.primeiro_nome || ' ' || c.sobrenome AS nome_completo, 
+    t.telefone 
+FROM 
+    conta_obj_tab c, 
+    TABLE(c.telefones) t
+ORDER BY 
+    c.sobrenome, c.primeiro_nome, t.telefone;
+
+SELECT 
+    p.id_perfil,
+    p.apelido,
+    p.conta_email,
+    (SELECT COUNT(*) FROM TABLE(p.generos_favoritos)) AS quantidade_generos_favoritos
+FROM 
+    perfil_obj_tab p
+ORDER BY 
+    quantidade_generos_favoritos DESC, p.apelido;
+
+
+SELECT  
+    f.id_conteudo, 
+    f.nome, 
+    DEREF(f.sucessor).id_conteudo AS id_sucessor, 
+    DEREF(f.sucessor).nome AS nome_sucessor
+FROM 
+    filme_obj_tab f
+WHERE 
+    f.sucessor IS NOT NULL
+ORDER BY 
+    f.id_conteudo;
+
+
+
+SELECT 
+    id_serie, 
+    nome, 
+    numero_episodios,
+    CASE 
+        WHEN numero_episodios < 10 THEN 'Curta'
+        ELSE 'Longa'
+    END AS categoria
+FROM 
+    serie_obj_tab
+ORDER BY 
+    numero_episodios DESC, nome;
+
+
+
+SELECT 
+    e.id_conteudo, 
+    e.nome AS nome_episodio, 
+    e.temporada, 
+    s.nome AS nome_serie
+FROM 
+    episodio_obj_tab e
+JOIN 
+    serie_obj_tab s
+ON 
+    e.serie_pertencente = REF(s)
+ORDER BY 
+    s.nome, e.temporada;
+
+
+
+SELECT 
+    TRUNC(a.data_hora) AS data_avaliacao,
+    ROUND(AVG(a.qualidade), 2) AS media_qualidade,
+    COUNT(*) AS total_avaliacoes
+FROM 
+    avaliacao_obj_tab a
+GROUP BY 
+    TRUNC(a.data_hora)
+HAVING 
+    AVG(a.qualidade) > 3
+ORDER BY 
+    data_avaliacao DESC;
+
+
+SELECT 
+    p.email,
+    p.id_plano,
+    COUNT(p.id_filme) AS total_filmes
+FROM 
+    plano_permite_filme_obj_tab p
+GROUP BY 
+    p.email, p.id_plano
+ORDER BY 
+    total_filmes DESC, p.email;
+
