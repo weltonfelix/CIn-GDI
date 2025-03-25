@@ -530,7 +530,7 @@ VALUES (
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     1, 
     'jose.silva@email.com', 
     'Zé', 
@@ -540,11 +540,11 @@ VALUES (
         genero_favorito_t('Ação'), 
         genero_favorito_t('Aventura')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     2, 
     'jose.silva@email.com', 
     'SilvaZ', 
@@ -554,11 +554,11 @@ VALUES (
         genero_favorito_t('Comédia'), 
         genero_favorito_t('Infantil')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     3, 
     'maria.santos@email.com', 
     'Mari', 
@@ -568,11 +568,11 @@ VALUES (
         genero_favorito_t('Romance'), 
         genero_favorito_t('Drama')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     4, 
     'maria.santos@email.com', 
     'Marinha', 
@@ -581,11 +581,11 @@ VALUES (
     generos_favoritos_ntt(
         genero_favorito_t('Infantil')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     5, 
     'maria.santos@email.com', 
     'Mariazinha', 
@@ -595,11 +595,11 @@ VALUES (
         genero_favorito_t('Aventura'), 
         genero_favorito_t('Comédia')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     6, 
     'pedro.oliveira@email.com', 
     'Pedrinho', 
@@ -609,11 +609,11 @@ VALUES (
         genero_favorito_t('Terror'), 
         genero_favorito_t('Mistério')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     7, 
     'pedro.oliveira@email.com', 
     'P. Oliveira', 
@@ -623,11 +623,11 @@ VALUES (
         genero_favorito_t('Infantil'), 
         genero_favorito_t('Comédia')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     8, 
     'ana.pereira@email.com', 
     'Aninha', 
@@ -637,11 +637,11 @@ VALUES (
         genero_favorito_t('Drama'), 
         genero_favorito_t('Romance')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     9, 
     'ana.pereira@email.com', 
     'AnaP', 
@@ -650,11 +650,11 @@ VALUES (
     generos_favoritos_ntt(
         genero_favorito_t('Infantil')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     10, 
     'ana.pereira@email.com', 
     'AnaPer', 
@@ -664,11 +664,11 @@ VALUES (
         genero_favorito_t('Comédia'), 
         genero_favorito_t('Infantil')
     )
-);
+));
 
 
 INSERT INTO perfil_obj_tab 
-VALUES (
+VALUES (perfil_t(
     11, 
     'lucas.rodrigues@email.com', 
     'Luquinha', 
@@ -677,7 +677,7 @@ VALUES (
     generos_favoritos_ntt(
         genero_favorito_t('Ação')
     )
-);
+));
 
 
 DECLARE
