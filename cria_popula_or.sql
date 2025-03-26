@@ -1802,6 +1802,9 @@ BEGIN
     
     v_comparacao := v_consumo1.comparar_consumo(v_consumo2);
     DBMS_OUTPUT.PUT_LINE('Comparação de consumo: ' || v_comparacao);
+
+    DBMS_OUTPUT.PUT_LINE('Teste da função imprimir_consumo:');
+    v_consumo1.imprimir_consumo(1, 1);
 END;
 
 SELECT id_plano, nome, preco, tempo_fidelidade_meses, 
