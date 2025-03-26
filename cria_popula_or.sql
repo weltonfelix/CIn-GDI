@@ -1778,8 +1778,11 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Descrição do Filme: ' || v_filme.descricao());
     DBMS_OUTPUT.PUT_LINE('Descrição da Série: ' || v_serie.resumo());
     DBMS_OUTPUT.PUT_LINE('Descrição do Episódio: ' || v_episodio.descricao()); -- vindo de conteúdo
-	DBMS_OUTPUT.PUT_LINE('Informações do Episódio: ' || v_episodio.info());
+    DBMS_OUTPUT.PUT_LINE('Informações do Episódio: ' || v_episodio.info());
     DBMS_OUTPUT.PUT_LINE('Consumo Info: ' || v_consumo.consumo_info());
+    DBMS_OUTPUT.PUT_LINE('Teste do construtor de avaliacao_t: ID = ' || v_avaliacao.id_avaliacao || 
+                         ', Qualidade = ' || v_avaliacao.qualidade || 
+                         ', Data = ' || TO_CHAR(v_avaliacao.data_hora, 'YYYY-MM-DD HH24:MI:SS'));
 END;
 /
 
