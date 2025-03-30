@@ -258,57 +258,7 @@ CREATE OR REPLACE TYPE perfil_consome_filme_t AS OBJECT (
     MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER),
     ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER
 ) FINAL;
-    
-CREATE OR REPLACE TYPE BODY perfil_consome_filme_t AS 
-    FINAL MEMBER FUNCTION consumo_info RETURN VARCHAR2 IS
-    BEGIN
-       RETURN 'Consumo registrado em ' || TO_CHAR(self.data_hora, 'DD/MM/YYYY HH24:MI');
-    END;
 
-    MEMBER PROCEDURE atualizar_progresso(novo_progresso NUMBER) IS
-    BEGIN
-        IF novo_progresso < 0 OR novo_progresso > 100 THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Progresso deve estar entre 0 e 100.');
-        END IF;
-        self.progresso_percentual := novo_progresso;
-    END;
-
-    ORDER MEMBER FUNCTION comparar_consumo (outro perfil_consome_filme_t) RETURN INTEGER IS
-        qualidade_self NUMBER;
-        qualidade_outro NUMBER;
-    BEGIN
-        IF self.progresso_percentual > outro.progresso_percentual THEN
-            RETURN 1;
-        ELSIF self.progresso_percentual < outro.progresso_percentual THEN
-            RETURN -1;
-        END IF;
-
-        IF self.avaliacao IS NOT NULL THEN
-            SELECT qualidade INTO qualidade_self 
-            FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(self.avaliacao).id_avaliacao;  
-        ELSE
-            qualidade_self := 0; 
-        END IF;
-
-        IF outro.avaliacao IS NOT NULL THEN
-            SELECT qualidade INTO qualidade_outro 
-            FROM avaliacao_obj_tab 
-            WHERE id_avaliacao = DEREF(outro.avaliacao).id_avaliacao; 
-        ELSE
-            qualidade_outro := 0;
-        END IF;
-
-        IF qualidade_self > qualidade_outro THEN
-            RETURN 1;
-        ELSIF qualidade_self < qualidade_outro THEN
-            RETURN -1;
-        ELSE
-            RETURN 0;
-        END IF;
-    END;
-
-END;
 
 CREATE OR REPLACE TYPE perfil_consome_episodio_t AS OBJECT (
     id_episodio            NUMBER, -- com REF não pode ser chave primária
@@ -789,6 +739,7 @@ INSERT INTO serie_obj_tab VALUES (serie_t(1, 10, 'Breaking Bad'));
 INSERT INTO serie_obj_tab VALUES (serie_t(2, 8, 'Avatar'));
 INSERT INTO serie_obj_tab VALUES (serie_t(3, 10, 'Better Call Saul'));
 INSERT INTO serie_obj_tab VALUES (serie_t(4, 10, 'Dark'));
+
 
 -- Episódios
 
@@ -1285,6 +1236,7 @@ INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(26, 1, 'lu
 INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(27, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
 
 INSERT INTO plano_permite_filme_obj_tab VALUES (plano_permite_filme_t(28, 1, 'lucas.rodrigues@email.com', TO_DATE('31-12-2022', 'DD-MM-YYYY'), NULL, NULL));
+
 
 INSERT INTO plano_permite_episodio_obj_tab VALUES (plano_permite_episodio_t(29, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL));
 
@@ -1807,3 +1759,202 @@ BEGIN
 
     COMMIT;
 END;
+
+
+-- Criando instâncias de objetos para teste
+DECLARE
+    v_plano plano_t := plano_t(1, 'Básico', 29.99, 12);
+    v_conta conta_t := conta_t('email@example.com', 'João', 'Silva', 'senha123', telefone_varray(telefone_t('999999999')));
+    v_avaliacao avaliacao_t := avaliacao_t(5, 3, SYSDATE);
+    v_filme filme_t := filme_t(7, 'Jurassic Park', TO_DATE('11-06-1993', 'DD-MM-YYYY'), 'Aventura', 127, 'Michael Crichton', 'Universal Pictures', NULL, NULL);
+    v_serie serie_t := serie_t(1, 10, 'Breaking Bad');
+    v_episodio episodio_t := episodio_t(66, 'Dark - S01E10 - Alfa e Ômega', TO_DATE('01-12-2017', 'DD-MM-YYYY'), 'Mistério', 55, 'Baran bo Odar, Jantje Friese', 'Netflix', NULL, 1, NULL);
+	v_consumo perfil_consome_filme_t := perfil_consome_filme_t(1, 1, 'jose.silva@email.com', TO_TIMESTAMP('01/02/2025 14:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 75, NULL);
+BEGIN
+    -- Testando funções
+    DBMS_OUTPUT.PUT_LINE('Detalhes do Plano: ' || v_plano.exibir_detalhes());
+    DBMS_OUTPUT.PUT_LINE('Nome do Usuário: ' || v_conta.exibir_nome());
+    DBMS_OUTPUT.PUT_LINE('Status da Avaliação: ' || v_avaliacao.status_avaliacao());
+    DBMS_OUTPUT.PUT_LINE('Descrição do Filme: ' || v_filme.descricao());
+    DBMS_OUTPUT.PUT_LINE('Descrição da Série: ' || v_serie.resumo());
+    DBMS_OUTPUT.PUT_LINE('Descrição do Episódio: ' || v_episodio.descricao()); -- vindo de conteúdo
+    DBMS_OUTPUT.PUT_LINE('Informações do Episódio: ' || v_episodio.info());
+    DBMS_OUTPUT.PUT_LINE('Consumo Info: ' || v_consumo.consumo_info());
+    DBMS_OUTPUT.PUT_LINE('Teste do construtor de avaliacao_t: ID = ' || v_avaliacao.id_avaliacao || 
+                         ', Qualidade = ' || v_avaliacao.qualidade || 
+                         ', Data = ' || TO_CHAR(v_avaliacao.data_hora, 'YYYY-MM-DD HH24:MI:SS'));
+END;
+/
+
+DECLARE
+    v_perfil perfil_t := perfil_t(1, 'jose.silva@email.com', 'Zé', 'Livre', TO_DATE('05-02-2025', 'DD-MM-YYYY'),generos_favoritos_ntt(genero_favorito_t('Ação'), genero_favorito_t('Aventura')));
+    v_plano_filme plano_permite_filme_t := plano_permite_filme_t(1, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL);
+    v_plano_episodio plano_permite_episodio_t := plano_permite_episodio_t(29, 1, 'pedro.oliveira@email.com', TO_DATE('20-01-2008', 'DD-MM-YYYY'), NULL, NULL);
+    v_consumo1 perfil_consome_filme_t := perfil_consome_filme_t(1, 1, 'jose.silva@email.com', TO_TIMESTAMP('01/02/2025 14:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 75, NULL);
+    v_consumo2 perfil_consome_filme_t := perfil_consome_filme_t(7, 7, 'pedro.oliveira@email.com', TO_TIMESTAMP('07/02/2025 09:30:00', 'DD/MM/YYYY HH24:MI:SS'), 'Celular', 90, NULL);
+    v_comparacao INTEGER;
+BEGIN
+    -- Testando funções
+    DBMS_OUTPUT.PUT_LINE('Informações do Perfil: ' || v_perfil.get_info());
+    DBMS_OUTPUT.PUT_LINE('Período do Plano para Filmes: ' || v_plano_filme.periodo());
+    DBMS_OUTPUT.PUT_LINE('Período do Plano para Episódios: ' || v_plano_episodio.periodo());
+    
+    -- Testando procedimentos
+    v_consumo1.atualizar_progresso(75);
+    v_consumo2.atualizar_progresso(50);
+    
+    v_comparacao := v_consumo1.comparar_consumo(v_consumo2);
+    DBMS_OUTPUT.PUT_LINE('Comparação de consumo: ' || v_comparacao);
+
+    DBMS_OUTPUT.PUT_LINE('Teste da função imprimir_consumo:');
+    v_consumo1.imprimir_consumo(1, 1);
+END;
+
+SELECT id_plano, nome, preco, tempo_fidelidade_meses, 
+       CASE 
+           WHEN tempo_fidelidade_meses > 0 THEN 'Possui Fidelidade'
+           ELSE 'Sem Fidelidade'
+       END AS status_fidelidade
+FROM plano_obj_tab
+ORDER BY preco DESC;
+
+SELECT 
+    c.email, 
+    c.primeiro_nome || ' ' || c.sobrenome AS nome_completo, 
+    t.telefone 
+FROM 
+    conta_obj_tab c, 
+    TABLE(c.telefones) t
+ORDER BY 
+    c.sobrenome, c.primeiro_nome, t.telefone;
+
+SELECT 
+    p.id_perfil,
+    p.apelido,
+    p.conta_email,
+    (SELECT COUNT(*) FROM TABLE(p.generos_favoritos)) AS quantidade_generos_favoritos
+FROM 
+    perfil_obj_tab p
+ORDER BY 
+    quantidade_generos_favoritos DESC, p.apelido;
+
+
+SELECT  
+    f.id_conteudo, 
+    f.nome, 
+    DEREF(f.sucessor).id_conteudo AS id_sucessor, 
+    DEREF(f.sucessor).nome AS nome_sucessor
+FROM 
+    filme_obj_tab f
+WHERE 
+    f.sucessor IS NOT NULL
+ORDER BY 
+    f.id_conteudo;
+
+
+
+SELECT 
+    id_serie, 
+    nome, 
+    numero_episodios,
+    CASE 
+        WHEN numero_episodios < 10 THEN 'Curta'
+        ELSE 'Longa'
+    END AS categoria
+FROM 
+    serie_obj_tab
+ORDER BY 
+    numero_episodios DESC, nome;
+
+
+
+SELECT 
+    e.id_conteudo, 
+    e.nome AS nome_episodio, 
+    e.temporada, 
+    s.nome AS nome_serie
+FROM 
+    episodio_obj_tab e
+JOIN 
+    serie_obj_tab s
+ON 
+    e.serie_pertencente = REF(s)
+ORDER BY 
+    s.nome, e.temporada;
+
+
+
+SELECT
+    TRUNC(a.ordenar()) AS data_avaliacao,
+    ROUND(AVG(a.qualidade), 2) AS media_qualidade,
+    COUNT(*) AS total_avaliacoes
+FROM 
+    avaliacao_obj_tab a
+GROUP BY 
+    TRUNC(a.ordenar())
+HAVING 
+    AVG(a.qualidade) > 3
+ORDER BY 
+    data_avaliacao DESC;
+
+
+SELECT 
+    p.email,
+    p.id_plano,
+    COUNT(p.id_filme) AS total_filmes
+FROM 
+    plano_permite_filme_obj_tab p
+GROUP BY 
+    p.email, p.id_plano
+ORDER BY 
+    total_filmes DESC, p.email;
+
+
+SELECT 
+    p.id_episodio AS "ID Episódio",
+    p.id_plano AS "ID Plano",
+    p.email AS "Email",
+    p.periodo() AS "Período de Acesso",
+    NVL2(p.desconto_aplicado, TO_CHAR(p.desconto_aplicado, '999.99') || '%', 'Sem desconto') AS "Desconto Aplicado"
+FROM plano_permite_episodio_obj_tab p
+ORDER BY p.data_inicio DESC;
+
+
+SELECT 
+    p.id_filme AS "ID do Filme",
+    p.id_perfil AS "ID do Perfil",
+    p.email AS "Email",
+    p.consumo_info() AS "Data do Consumo",
+    p.dispositivo_utilizado AS "Dispositivo",
+    TO_CHAR(p.progresso_percentual, '990.00') || '%' AS "Progresso",
+    CASE 
+        WHEN p.progresso_percentual = 100 THEN 'Finalizado'
+        WHEN p.progresso_percentual >= 75 THEN 'Quase no fim'
+        WHEN p.progresso_percentual >= 50 THEN 'Metade'
+        WHEN p.progresso_percentual >= 25 THEN 'Começando'
+        ELSE 'Início'
+    END AS "Status de Consumo"
+FROM perfil_consome_filme_obj_tab p
+ORDER BY p.progresso_percentual DESC, p.data_hora DESC;
+
+
+SELECT 
+    p.id_episodio AS "ID do Episódio",
+    p.id_perfil AS "ID do Perfil",
+    p.email AS "Email",
+    TO_CHAR(p.data_hora, 'DD/MM/YYYY HH24:MI') AS "Data de Consumo",
+    p.dispositivo_utilizado AS "Dispositivo",
+    TO_CHAR(p.progresso_percentual, '990.00') || '%' AS "Progresso",
+    CASE 
+        WHEN p.progresso_percentual = 100 THEN 'Finalizado'
+        WHEN p.progresso_percentual >= 75 THEN 'Quase no fim'
+        WHEN p.progresso_percentual >= 50 THEN 'Metade'
+        WHEN p.progresso_percentual >= 25 THEN 'Começando'
+        ELSE 'Início'
+    END AS "Status de Consumo",
+    (SELECT a.qualidade 
+     FROM avaliacao_obj_tab a 
+     WHERE a.id_avaliacao = DEREF(p.avaliacao).id_avaliacao) AS "Qualidade da Avaliação"
+FROM perfil_consome_episodio_obj_tab p
+ORDER BY p.progresso_percentual DESC, p.data_hora DESC;
+
