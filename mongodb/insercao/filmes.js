@@ -33,7 +33,7 @@ db.filmes.insertMany([
     genero: "Ficção Científica",
     sinopse: "Um hacker descobre que a realidade é uma simulação e luta contra máquinas.",
     classificacao_indicativa: "14",
-    idiomas: ["Inglês", "Português", "Japon\u00eas"]
+    idiomas: ["Inglês", "Português", "Japonês"]
   },
   {
     _id: ObjectId('67ec3a98ea877c8abebfc32a'),
@@ -42,7 +42,7 @@ db.filmes.insertMany([
     genero: "Animação",
     sinopse: "Brinquedos ganham vida quando os humanos não estão olhando.",
     classificacao_indicativa: "L",
-    idiomas: ["Inglês", "Português", "Franc\u00eas"]
+    idiomas: ["Inglês", "Português", "Francês"]
   },
   {
     _id: ObjectId('67ec3a98ea877c8abebfc32b'),
@@ -60,7 +60,7 @@ db.filmes.insertMany([
     genero: "Suspense",
     sinopse: "Um ladrão invade os sonhos das pessoas para roubar segredos.",
     classificacao_indicativa: "14",
-    idiomas: ["Inglês", "Português", "Alem\u00e3o"]
+    idiomas: ["Inglês", "Português", "Alemão"]
   },
   {
     _id: ObjectId('67ec3ab75604fcf24e509e4e'),
@@ -69,7 +69,7 @@ db.filmes.insertMany([
     genero: "Ação",
     sinopse: "No planeta Pandora, um soldado paraplégico se junta aos nativos em uma batalha pela sobrevivência.",
     classificacao_indicativa: "12",
-    idiomas: ["Inglês", "Português", "Franc\u00eas"]
+    idiomas: ["Inglês", "Português", "Francês"]
   },
   {
     _id: ObjectId('67ec3ac0ea877c8abebfc32e'),
@@ -96,7 +96,7 @@ db.filmes.insertMany([
     genero: "Drama",
     sinopse: "Um homem insatisfeito com a vida encontra um carismático vendedor de sabão e forma um clube de lutas clandestinas.",
     classificacao_indicativa: "18",
-    idiomas: ["Inglês", "Português", "Alem\u00e3o"]
+    idiomas: ["Inglês", "Português", "Alemão"]
   },
   {
     _id: ObjectId('67ec3ac0ea877c8abebfc332'),
@@ -114,7 +114,7 @@ db.filmes.insertMany([
     genero: "Romance",
     sinopse: "O trágico romance entre Jack e Rose a bordo do Titanic.",
     classificacao_indicativa: "12",
-    idiomas: ["Inglês", "Franc\u00eas", "Italiano"]
+    idiomas: ["Inglês", "Francês", "Italiano"]
   },
   {
     _id: ObjectId('67ec3ac0ea877c8abebfc334'),
@@ -123,7 +123,7 @@ db.filmes.insertMany([
     genero: "Ação",
     sinopse: "Batman enfrenta o Coringa, um anarquista que espalha o caos em Gotham.",
     classificacao_indicativa: "14",
-    idiomas: ["Inglês", "Português", "Alem\u00e3o"]
+    idiomas: ["Inglês", "Português", "Alemão"]
   },
   {
     _id: ObjectId('67ec3ac0ea877c8abebfc335'),
@@ -141,7 +141,7 @@ db.filmes.insertMany([
     genero: "Animação",
     sinopse: "Uma família de super-heróis volta à ação para salvar o mundo.",
     classificacao_indicativa: "L",
-    idiomas: ["Inglês", "Português", "Japon\u00eas"]
+    idiomas: ["Inglês", "Português", "Japonês"]
   },
   {
     _id: ObjectId('67ec3af25604fcf24e509e50'),
